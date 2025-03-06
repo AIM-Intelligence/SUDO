@@ -9,16 +9,17 @@
 ### Docker command
 
 docker run \
-    -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
-    -v $(pwd)/computer_use_demo:/home/computeruse/computer_use_demo/ \
-    -v /home/jiankim/project/aim/agentic_security/sudo/claude-cua/computer-use-demo/computer_use_demo/data:/home/computeruse/computer_use_demo/data \
-    -v /home/jiankim/project/aim/agentic_security/sudo/claude-cua/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log \
-    -v $HOME/.anthropic:/home/computeruse/.anthropic \
-    -p 5900:5900 \
-    -p 8501:8501 \
-    -p 6080:6080 \
-    -p 8080:8080 \
-    -it sudo-cua:local
+  -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
+  -v $(pwd)/computer_use_demo:/home/computeruse/computer_use_demo/ \
+  -v $(pwd)/claude-cua/computer-use-demo/computer_use_demo/data:/home/computeruse/computer_use_demo/data \
+  -v $(pwd)/claude-cua/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log \
+  -v $HOME/.anthropic:/home/computeruse/.anthropic \
+  -p 5900:5900 \
+  -p 8501:8501 \
+  -p 6080:6080 \
+  -p 8080:8080 \
+  -it sudo-cua:local
+
 
 4. log 폴더에 attack result log json이 생김
 
