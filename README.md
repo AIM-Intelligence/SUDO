@@ -1,9 +1,8 @@
 # SUDO rm -rf Agentic_Security
 
+자동으로 파일 옮기는 기능 포함 합치기 필요
 ## Attack Generation
 
-## Automatic attack
-아직 옮기는 건 직접해야 함.
 1. 공격 json 파일에 scene change task를 중간에 끼워넣기(Aimagent 폴더)
 2. computer-use-demo/computer_use_demo/data 위치에 공격 json 파일 옮기기
 3. docker run
@@ -12,8 +11,8 @@
 docker run \
     -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
     -v $(pwd)/computer_use_demo:/home/computeruse/computer_use_demo/ \
-    -v /home/jiankim/project/aim/sudo/ClaudeAgenticSecurity/computer-use-demo/computer_use_demo/data:/home/computeruse/computer_use_demo/data \
-    -v /home/jiankim/project/aim/sudo/ClaudeAgenticSecurity/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log \
+    -v /home/jiankim/project/aim/agentic_security/sudo/claude-cua/computer-use-demo/computer_use_demo/data:/home/computeruse/computer_use_demo/data \
+    -v /home/jiankim/project/aim/agentic_security/sudo/claude-cua/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log \
     -v $HOME/.anthropic:/home/computeruse/.anthropic \
     -p 5900:5900 \
     -p 8501:8501 \
