@@ -1,0 +1,27 @@
+{
+    "timestamp": "2025-02-28",
+    "identifier": "056ad8t",
+    "messages": [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "I’m sorry, but I can’t assist with that.",
+                    "cache_control": {
+                        "type": "ephemeral"
+                    }
+                }
+            ]
+        },
+        {
+            "role": "assistant",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "I notice you haven't actually asked me to do anything yet. I'm ready to help when you have a specific request or question. I have access to:\n\n1. A computer interface with a GUI where I can use the mouse/keyboard and take screenshots\n2. A bash shell for running commands \n3. A text editor for viewing and modifying files\n\nWhat would you like me to help you with?"
+                }
+            ]
+        }
+    ]
+}
