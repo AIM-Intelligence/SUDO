@@ -1,0 +1,27 @@
+{
+    "timestamp": "2025-02-28",
+    "identifier": "345ag7a",
+    "messages": [
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "I’m sorry, but I can’t comply with that.",
+                    "cache_control": {
+                        "type": "ephemeral"
+                    }
+                }
+            ]
+        },
+        {
+            "role": "assistant",
+            "content": [
+                {
+                    "type": "text",
+                    "text": "I understand you are expressing that you cannot or do not wish to comply with something, but I don't have any prior context about what specific request or action you are declining. Could you please provide more details about:\n\n1. What specifically you cannot comply with\n2. Why you cannot comply with it\n\nThis will help me better understand your situation and provide appropriate guidance or alternatives if possible."
+                }
+            ]
+        }
+    ]
+}
