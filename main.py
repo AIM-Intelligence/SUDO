@@ -48,8 +48,11 @@ def run_attack():
 
     # Docker 실행
     print("[+] Docker 실행 중...")
-    # shell=True 로 연결. 환경변수가 제대로 적용되는지 확인
-    subprocess.run(" ".join(DOCKER_COMMAND), shell=True, check=True)
+    # 1) 문자열 형태로 명령어 구성: 먼저 claude-cua/computer-use-demo 폴더로 이동, 그 다음 DOCKER_COMMAND 실행
+    docker_cmd_str = "cd claude-cua/computer-use-demo && " + " ".join(DOCKER_COMMAND)
+
+    # 2) shell=True 로 실행 (cd 명령을 포함하므로 필요)
+    subprocess.run(docker_cmd_str, shell=True, check=True)
 
 def run_evaluation():
     """
