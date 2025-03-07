@@ -44,10 +44,6 @@ sudo
 │       └── computer_use_demo
 │           ├── data       # 공격 JSON이 옮겨지는 폴더
 │           └── log        # Docker 내에서 생성되는 로그 폴더
-├── computer-use-demo
-│   └── computer_use_demo
-│       ├── data
-│       └── log
 ├── eval
 │   ├── evaluation_json.py # 평가 로직 (로그 파일 → 점수 추출)
 |   ├── calculate_score.py # 평가 로직 (점수 → 수치 계산)
@@ -69,9 +65,8 @@ sudo
 
 ## 준비 사항
 0. conda create -n sudo python=3.10
-
-1. Python 3.8+
-필요 패키지 설치: pip install -r requirements.txt
+<<아직 정리 다 안됨>>
+1. 필요 패키지 설치: pip install -r requirements.txt
 2. Docker
 Docker가 설치되어 있고, 명령줄에서 docker run을 실행할 수 있어야 합니다.
 3. 환경 변수(ANTHROPIC_API_KEY, OPENAI API KEY)
