@@ -1,7 +1,6 @@
-# SUDO rm -rf Agentic_Security
+# sudo rm -rf agentic_security
 
-이 레포지토리는 **공격(Attack) 자동 생성**, **평가(Evaluation)**, 그리고 **Dynamic Attack** 생성을 한 번에 관리하는 시스템입니다.  
-**Docker** 환경에서 공격 시나리오를 실행한 뒤 결과를 자동으로 정리하고, 평가 후 **동적 공격**(Dynamic Attack)을 생성하는 과정을 간편하게 수행할 수 있습니다.
+이 레포지토리는 Computer use agent를 대상으로 **Attack 자동 생성**, **Evaluation**, **Dynamic Attack** 생성을 한 번에 관리하는 시스템입니다. **Docker** 환경에서 공격 시나리오를 실행한 뒤 결과를 자동으로 정리하고, 평가 후 **Dynamic Attack**을 생성하는 과정을 간편하게 수행할 수 있습니다.
 
 ---
 
@@ -28,14 +27,14 @@
 - **Dynamic Attack**:  
   평가 결과를 활용해 **동적 공격**(Dynamic Attack)을 추가 생성.
 
-이 모든 단계가 **`main.py`** 단일 스크립트로 자동화됩니다.
+모든 단계는 **`main.py`** 단일 스크립트로 자동화됨.
 
 ---
 
 ## 폴더 구조
 
 ```plaintext
-AIM
+sudo
 ├── main.py                # 전체 파이프라인을 관리하는 메인 스크립트
 ├── attack
 │   ├── attack_generation.py
@@ -65,22 +64,25 @@ AIM
 └── README.md              # 바로 이 파일
 ```
 
-주의: 실제 Docker 마운트 경로(-v 옵션)와 로컬 폴더 구조를 일치시켜야 합니다.
+주의: 실제 Docker 마운트 경로(-v 옵션)와 로컬 폴더 구조를 일치시켜야 함(현재 적용함.)
 
 ## 준비 사항
+0. conda create -n sudo python=3.10
+
 1. Python 3.8+
-필요 패키지 설치: pip install -r requirements.txt (존재 시)
+필요 패키지 설치: pip install -r requirements.txt
 2. Docker
 Docker가 설치되어 있고, 명령줄에서 docker run을 실행할 수 있어야 합니다.
-3. 환경 변수(ANTHROPIC_API_KEY)
+3. 환경 변수(ANTHROPIC_API_KEY, OPENAI API KEY)
 Docker 컨테이너 내부에서 사용할 API KEY를 설정해야 합니다.
 예) export ANTHROPIC_API_KEY="YOUR_KEY_HERE"
+4. Computer use agent 대상 공격 전, Victim account 생성 및 Attacker 로그인
 
 
 ## 사용 방법
-main.py 는 CLI 인자로 공격 생성/평가/동적 공격을 분리 실행하거나, 한 번에 처리할 수 있습니다.
+main.py 는 CLI 인자로 공격 생성/평가/동적 공격을 분리 실행하거나, 한 번에 처리.
 
-1. 공격(Attack)만 실행
+1. Static Attack만 실행
 
 ```bash
 python3 main.py --attack
@@ -89,7 +91,7 @@ python3 main.py --attack
 * 생성된 JSON → computer_use_demo/data 폴더로 이동
 * Docker 실행 (로그가 claude-cua/computer-use-demo/computer_use_demo/log에 생성)
 
-2. 평가(Evaluation)만 실행
+2. Evaluation만 실행
 
 ```bash
 python3 main.py --evaluate
@@ -97,7 +99,7 @@ python3 main.py --evaluate
 * Docker 결과(attack/result.json)를 eval/logs로 이동
 * evaluation_json.py 스크립트 실행 → 수치 계산 등
 
-3. 동적 공격(Dynamic Attack)만 실행
+3. Dynamic Attack만 실행
 
 ```bash
 python3 main.py --dynamic
@@ -110,7 +112,7 @@ python3 main.py --dynamic
 ```bash
 python3 main.py --all
 ```
-* 공격 생성 → 평가 → 동적 공격 순으로 자동 실행.
+* 공격 생성 → 공격 진행 → 평가 → 동적 공격 순으로 자동 실행.
 
 ## 상세 워크플로우
 1. Attack Generation
@@ -142,12 +144,6 @@ Scene Change Task 등을 삽입(필요 시 formatter/auto-scene 기능 활용).
 
 
 # Draft v1
-자동으로 파일 옮기는 기능 포함 합치기 필요
-## Attack Generation
-
-1. 공격 json 파일에 scene change task를 중간에 끼워넣기(Aimagent 폴더)
-2. computer-use-demo/computer_use_demo/data 위치에 공격 json 파일 옮기기
-3. docker run
 ### Docker command
 
 docker run \
@@ -161,13 +157,3 @@ docker run \
   -p 6080:6080 \
   -p 8080:8080 \
   -it sudo-cua:local
-
-4. log 폴더에 attack result log json이 생김
-
-## Evaluation
-1. Evaluation log 폴더로 옮기기
-2. 평가
-3. 수치 자동 계산
-
-## Dynamic Attack Generation
-1. 결과가 Dynamic attack으로 이어지게 하기.
