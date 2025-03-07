@@ -2,6 +2,10 @@ import argparse
 import subprocess
 import shutil
 import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=".env")
+ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
 # ===== 경로 설정 =====
 ATTACK_SCRIPT = "./attack/attack_generation.py"
@@ -15,7 +19,7 @@ EVAL_LOG_FOLDER = "./eval/logs/"
 # ===== Docker 실행 명령어 =====
 DOCKER_COMMAND = [
     "docker", "run",
-    "-e", "ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY",
+    "-e", f"ANTHROPIC_API_KEY={ANTHROPIC_KEY}",
     "-v", f"{os.getcwd()}/computer-use-demo:/home/computeruse/computer_use_demo/",
     "-v", f"{os.getcwd()}/claude-cua/computer-use-demo/computer_use_demo/data:/home/computeruse/computer_use_demo/data",
     "-v", f"{os.getcwd()}/claude-cua/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log",
@@ -27,11 +31,10 @@ DOCKER_COMMAND = [
     "-it", "sudo-cua:local"
 ]
 
-def run_attack():
+def run_attack_generation():
     """
     1) 공격 JSON 생성 (Scene Change Task 삽입 포함)
     2) 생성된 JSON을 `computer-use-demo/computer_use_demo/data`로 이동
-    3) Docker 실행
     """
     print("[+] 공격 JSON 생성 중...")
     subprocess.run(["python3", ATTACK_SCRIPT], check=True)
@@ -46,13 +49,27 @@ def run_attack():
     else:
         print("[!] 공격 JSON 파일을 찾지 못했습니다. 경로를 확인하세요.")
 
-    # Docker 실행
+def run_docker_run():
+    """
+    claude-cua/computer-use-demo 폴더로 이동한 뒤, Docker 명령 실행
+    """
     print("[+] Docker 실행 중...")
-    # 1) 문자열 형태로 명령어 구성: 먼저 claude-cua/computer-use-demo 폴더로 이동, 그 다음 DOCKER_COMMAND 실행
+
+    # (1) cd claude-cua/computer-use-demo
+    # (2) DOCKER_COMMAND 실행
     docker_cmd_str = "cd claude-cua/computer-use-demo && " + " ".join(DOCKER_COMMAND)
 
-    # 2) shell=True 로 실행 (cd 명령을 포함하므로 필요)
+    # shell=True 로 서브셸에서 cd + docker를 순차 실행
     subprocess.run(docker_cmd_str, shell=True, check=True)
+
+def run_attack():
+    """
+    (기존 Attack 단계처럼)
+    1) 공격 JSON 생성
+    2) Docker 실행
+    """
+    run_attack_generation()
+    run_docker_run()
 
 def run_evaluation():
     """
