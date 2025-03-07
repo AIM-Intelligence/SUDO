@@ -95,11 +95,18 @@ def run_dynamic_attack():
     subprocess.run(["python3", DYNAMIC_ATTACK_SCRIPT], check=True)
 
 def main():
-    parser = argparse.ArgumentParser(description="Main Controller for Attack/Evaluation/Dynamic")
-    parser.add_argument("--attack", action="store_true", help="공격 생성 및 Docker 실행")
-    parser.add_argument("--evaluate", action="store_true", help="평가 실행 (log 이동 & 수치 계산)")
+    parser = argparse.ArgumentParser(description="Main Controller for Attack / Docker / Evaluation / Dynamic")
+    # 공격 관련
+    parser.add_argument("--attack-gen", action="store_true", help="공격 JSON 생성만 수행")
+    parser.add_argument("--docker-run", action="store_true", help="Docker 실행만 수행")
+    parser.add_argument("--attack", action="store_true", help="공격 생성 + Docker 실행 (연속)")
+
+    # 평가, Dynamic Attack
+    parser.add_argument("--evaluate", action="store_true", help="평가 실행")
     parser.add_argument("--dynamic", action="store_true", help="Dynamic Attack 실행")
-    parser.add_argument("--all", action="store_true", help="Attack → Evaluate → Dynamic Attack 전체 실행")
+
+    # 전체 파이프라인
+    parser.add_argument("--all", action="store_true", help="Attack (JSON+Docker) → Evaluate → Dynamic 순서 전체 실행")
 
     args = parser.parse_args()
 
@@ -108,10 +115,18 @@ def main():
         run_evaluation()
         run_dynamic_attack()
     else:
+        if args.attack_gen:
+            run_attack_generation()
+
+        if args.docker_run:
+            run_docker_run()
+
         if args.attack:
             run_attack()
+
         if args.evaluate:
             run_evaluation()
+
         if args.dynamic:
             run_dynamic_attack()
 
