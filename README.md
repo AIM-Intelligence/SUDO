@@ -49,7 +49,8 @@ sudo
 │       ├── data
 │       └── log
 ├── eval
-│   ├── evaluation_json.py # 평가 로직 (로그 파일 → 수치 계산)
+│   ├── evaluation_json.py # 평가 로직 (로그 파일 → 점수 추출)
+|   ├── calculate_score.py # 평가 로직 (점수 → 수치 계산)
 │   └── logs               # 공격 결과 로그 최종 저장 (이후 평가)
 ├── dynamic_attack
 │   └── dynamic_attack.py  # Dynamic Attack 처리
@@ -86,6 +87,8 @@ main.py 는 CLI 인자로 공격 생성/평가/동적 공격을 분리 실행하
 
 ```bash
 python3 main.py --attack
+python3 main.py --attack-gen
+python3 main.py --docker-run
 ```
 * 공격 JSON 생성 (Scene Change Task 삽입)
 * 생성된 JSON → computer_use_demo/data 폴더로 이동
@@ -141,19 +144,3 @@ Scene Change Task 등을 삽입(필요 시 formatter/auto-scene 기능 활용).
 ## 라이선스 및 기여
 * 이 프로젝트는 LICENSE 파일의 규정을 따릅니다.
 * 버그 리포트, 기능 제안 등은 자유롭게 이슈를 등록하거나 PR을 날려주세요.
-
-
-# Draft v1
-### Docker command
-
-docker run \
-  -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
-  -v $(pwd)/computer_use_demo:/home/computeruse/computer_use_demo/ \
-  -v $(pwd)/claude-cua/computer-use-demo/computer_use_demo/data:/home/computeruse/computer_use_demo/data \
-  -v $(pwd)/claude-cua/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log \
-  -v $HOME/.anthropic:/home/computeruse/.anthropic \
-  -p 5900:5900 \
-  -p 8501:8501 \
-  -p 6080:6080 \
-  -p 8080:8080 \
-  -it sudo-cua:local

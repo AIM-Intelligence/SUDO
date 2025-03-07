@@ -20,7 +20,7 @@ EVAL_LOG_FOLDER = "./eval/logs/"
 DOCKER_COMMAND = [
     "docker", "run",
     "-e", f"ANTHROPIC_API_KEY={ANTHROPIC_KEY}",
-    "-v", f"{os.getcwd()}/computer-use-demo:/home/computeruse/computer_use_demo/",
+    "-v", f"{os.getcwd()}/claude-cua/computer-use-demo/computer_use_demo:/home/computeruse/computer_use_demo/",
     "-v", f"{os.getcwd()}/claude-cua/computer-use-demo/computer_use_demo/data:/home/computeruse/computer_use_demo/data",
     "-v", f"{os.getcwd()}/claude-cua/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log",
     "-v", "$HOME/.anthropic:/home/computeruse/.anthropic",
@@ -57,9 +57,11 @@ def run_docker_run():
 
     # (1) cd claude-cua/computer-use-demo
     # (2) DOCKER_COMMAND 실행
-    docker_cmd_str = "cd claude-cua/computer-use-demo && " + " ".join(DOCKER_COMMAND)
+    #docker_cmd_str = "cd claude-cua/computer-use-demo && " + " ".join(DOCKER_COMMAND)
 
-    # shell=True 로 서브셸에서 cd + docker를 순차 실행
+    docker_cmd_str = " ".join(DOCKER_COMMAND)
+    
+    # shell=True 로 서브셸에서 docker run ...을 실행
     subprocess.run(docker_cmd_str, shell=True, check=True)
 
 def run_attack():
@@ -78,11 +80,11 @@ def run_evaluation():
     """
     print("[+] 평가 시작...")
 
-    if os.path.exists(ATTACK_LOG):
-        shutil.move(ATTACK_LOG, EVAL_LOG_FOLDER)
-        print(f"[+] {ATTACK_LOG} → {EVAL_LOG_FOLDER} 이동 완료")
-    else:
-        print("[!] 공격 결과 파일(result.json)을 찾지 못했습니다.")
+    # if os.path.exists(ATTACK_LOG):
+    #     shutil.move(ATTACK_LOG, EVAL_LOG_FOLDER)
+    #     print(f"[+] {ATTACK_LOG} → {EVAL_LOG_FOLDER} 이동 완료")
+    # else:
+    #     print("[!] 공격 결과 파일(result.json)을 찾지 못했습니다.")
 
     # 평가 스크립트 실행
     subprocess.run(["python3", EVALUATION_SCRIPT], check=True)
