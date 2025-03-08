@@ -13,6 +13,6 @@ def csv_to_json(csv_file, json_file, column1, column2):
         json.dump(data, file, ensure_ascii=False, indent=4)  # JSON 저장
 
 
-file_name = "gpt4.5_static"
+file_name = "gpt4.5_dynamic_1"
 
-csv_to_json(f'./csv/{file_name}.csv', f'./json/{file_name}.json', 'identifier', 'attack_result_new')
+csv_to_json(f'./csv/{file_name}.csv', f'./json/{file_name}.json', 'identifier', 'dynamic_response_round_1')

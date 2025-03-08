@@ -20,16 +20,17 @@ def insert_scenechg_with_urls(scenechg_data, main_data):
     
     return modified_data
 
-def gen_auto_attack(filename):
+def gen_auto_attack(input_file, output_file):
     scenechg_data = load_json("harmGUI_scnchg.json")
-    attack_task = filename
+    attack_task = input_file
     attack_w_scnchg = insert_scenechg_with_urls(scenechg_data, load_json(attack_task))
-    output_file = os.path.splitext(attack_task)[0] + "_auto.json"
+    
+    #output_file = os.path.splitext(attack_task)[0] + "_auto.json"
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(attack_w_scnchg, f, indent=4, ensure_ascii=False)
 
     print(f"Save'{output_file}' completed.")
 
 
-filename = "/home/jiankim/project/aim/AimAgent/data/before_auto_scnchg/gpt4.5_static.json"
-gen_auto_attack(filename)
+file_name = "o1_dynamic_1"
+gen_auto_attack(f'./before_auto_scnchg/{file_name}.json', f'./after_auto_scnchg/{file_name}_auto.json')
