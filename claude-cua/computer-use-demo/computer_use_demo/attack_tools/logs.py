@@ -145,11 +145,13 @@ def save_log_to_dir(selected_file):
 
     json_bytes = json.dumps(log_data, indent=4, ensure_ascii=False).encode("utf-8")
 
-    if not os.path.exists(LOG_DIR):
-        os.makedirs(LOG_DIR, exist_ok=True)
+    filename_without_ext = os.path.splitext(selected_file)[0].removesuffix('_auto')
 
-    filename_without_ext = os.path.splitext(selected_file)[0]
-    log_file_path = os.path.join(LOG_DIR, f"{filename_without_ext}_{timestamp}_{last_identifier}.json")
+    selected_log_dir = os.path.join(LOG_DIR, filename_without_ext)
+    if not os.path.exists(selected_log_dir):
+        os.makedirs(selected_log_dir, exist_ok=True)
+
+    log_file_path = os.path.join(selected_log_dir, f"{filename_without_ext}_{timestamp}_{last_identifier}.json")
 
     try:
         with open(log_file_path, "wb") as log_file:

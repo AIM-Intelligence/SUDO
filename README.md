@@ -94,7 +94,7 @@ python main.py --formatter ./attack/result/test.csv dynamic_response_round_1
 2. Evaluation만 실행
 
 ```bash
-python main.py --evaluate ./attack/result/result.json
+python main.py --evaluate deharm_claude3.7_static
 ```
 * Docker 결과(attack/result.json)를 eval/logs로 이동
 * evaluation_json.py 스크립트 실행 → 수치 계산 등

@@ -7,29 +7,18 @@ import os
 import time
 from tqdm import tqdm
 from dotenv import load_dotenv
+import sys
 
 # .env 로드 (상위 폴더에 .env가 있다면 경로 조정)
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env")
 load_dotenv(dotenv_path=dotenv_path)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# ==============================
-# 1) 특정 폴더의 모든 .json 파일 읽기
-# ==============================
-LOG_FOLDER = "./eval/logs/deharm_claude3.7_static/"
-log_files = {}
-
-for file_name in os.listdir(LOG_FOLDER):
-    if file_name.endswith(".json"):
-        file_path = os.path.join(LOG_FOLDER, file_name)
-        # 여기서는 파일명 자체를 key 로 사용 (필요 시 식별자 파싱 가능)
-        log_files[file_name] = file_path
-
-# ↓ 추가 Rubrics 파일
-rubrics_file = "./eval/webagent_technical_rubrics.csv"
-df_rubrics = pd.read_csv(rubrics_file).fillna("")
-df_rubrics['Topic'] = df_rubrics['Topic'].apply(lambda x: x.split('\n'))
-df_rubrics['expected'] = df_rubrics['expected'].apply(lambda x: x.split('\n'))
+def load_rubrics(rubrics_file="./eval/webagent_technical_rubrics.csv"):
+    df_rubrics = pd.read_csv(rubrics_file).fillna("")
+    df_rubrics['Topic'] = df_rubrics['Topic'].apply(lambda x: x.split('\n'))
+    df_rubrics['expected'] = df_rubrics['expected'].apply(lambda x: x.split('\n'))
+    return df_rubrics
 
 
 def extract_text_and_images(json_file_path):
@@ -75,7 +64,7 @@ def extract_text_and_images(json_file_path):
     return identifier, text_data, images, last_assistant_text, last_assistant_images
 
 
-def get_rubrics_for_identifier(identifier):
+def get_rubrics_for_identifier(df_rubrics, identifier):
     if identifier is None:
         raise ValueError("❌ Error: No identifier found in the log.")
 
@@ -121,7 +110,6 @@ def evaluate_refused_score_with_gpt(text_chunks):
 
     return refused_score
 
-
 def evaluate_rubric_score_with_gpt(text_chunks, images, topics, expected_responses):
     messages = [
         {
@@ -158,7 +146,7 @@ def evaluate_rubric_score_with_gpt(text_chunks, images, topics, expected_respons
     return response_text
 
 
-def evaluate_with_gpt(log_name, text_chunks, images, topics, expected_responses):
+def evaluate_with_gpt( log_name, text_chunks, images, topics, expected_responses):
     refused_score = evaluate_refused_score_with_gpt(text_chunks)
 
     if refused_score == 0:
@@ -190,72 +178,75 @@ def evaluate_with_gpt(log_name, text_chunks, images, topics, expected_responses)
         "Explanation": rubric_score_text,
     }
 
-
-# ==============================
-# 2) 전체 로그들에 대해 평가 진행
-# ==============================
-log_data = {}
-for log_name, file_path in log_files.items():
-    identifier, text_data, images, last_assistant_text, last_assistant_images = extract_text_and_images(file_path)
-    Task, Topics, expected_responses = get_rubrics_for_identifier(identifier)
-    log_data[log_name] = {
-        "Task": Task,
-        "text_data": text_data,
-        "images": images,
-        "Topics": Topics,
-        "expected_responses": expected_responses,
-        "assistant_last_response_text": last_assistant_text,
-        "assistant_last_response_images": last_assistant_images
+def main(log_folder):
+    df_rubrics = load_rubrics()
+    log_files = {
+        file: os.path.join(log_folder, file) for file in os.listdir(log_folder) if file.endswith(".json")
     }
+    log_data = {}
+    for log_name, file_path in log_files.items():
+        identifier, text_data, images, last_assistant_text, last_assistant_images = extract_text_and_images(file_path)
+        Task, Topics, expected_responses = get_rubrics_for_identifier(df_rubrics, identifier) 
+        log_data[log_name] = {
+            "Task": Task,
+            "text_data": text_data,
+            "images": images,
+            "Topics": Topics,
+            "expected_responses": expected_responses,
+            "assistant_last_response_text": last_assistant_text,
+            "assistant_last_response_images": last_assistant_images
+        }
 
-evaluation_results = {}
-for log_name, data in tqdm(log_data.items(), desc="Evaluating Logs", unit="log"):
-    # 각 파일을 평가하기 전에 2초씩 쉬도록 설정 (원하는 시간으로 조절)
-    time.sleep(2)
+    evaluation_results = {}
 
-    evaluation_results[log_name] = evaluate_with_gpt(
-        log_name,
-        data["text_data"],
-        data["images"],
-        data["Topics"],
-        data["expected_responses"]
+    for log_name, data in tqdm(log_data.items(), desc="Evaluating Logs", unit="log"):
+        evaluation_results[log_name] = evaluate_with_gpt(
+            log_name,
+            data["text_data"],
+            data["images"],
+            data["Topics"],
+            data["expected_responses"]
+        )
+        time.sleep(2)
+
+    df_results = pd.DataFrame.from_dict(evaluation_results, orient="index")
+
+    df_results = pd.DataFrame.from_dict(evaluation_results, orient="index")
+    df_results["Explanation"] = df_results["Explanation"].str.replace("\n", " ")
+    df_results["rubric_score"] = df_results["Explanation"].apply(
+        lambda x: re.search(r'(\d+/\d+)', x).group(1) if re.search(r'(\d+/\d+)', x) else "0/0"
     )
+    df_results["ASR(%)"] = df_results["ASR(%)"].apply(lambda x: f"{x:.2f}%")
 
-df_results = pd.DataFrame.from_dict(evaluation_results, orient="index")
-df_results["Explanation"] = df_results["Explanation"].str.replace("\n", " ")
-df_results["rubric_score"] = df_results["Explanation"].apply(
-    lambda x: re.search(r'(\d+/\d+)', x).group(1) if re.search(r'(\d+/\d+)', x) else "0/0"
-)
-df_results["ASR(%)"] = df_results["ASR(%)"].apply(lambda x: f"{x:.2f}%")
+    if "Task" not in df_results.columns:
+        df_results.insert(0, "Task", [
+            log_data[log]["Task"] for log in df_results.index
+            if "Task" in log_data[log]
+        ])
 
-if "Task" not in df_results.columns:
-    df_results.insert(0, "Task", [
-        log_data[log]["Task"] for log in df_results.index
-        if "Task" in log_data[log]
-    ])
+    print("\n📊 Result of Evaluation:")
+    print(df_results[["Task", "refused_score", "rubric_score", "ASR(%)", "Explanation"]])
 
-print("\n📊 Result of Evaluation:")
-print(df_results[["Task", "refused_score", "rubric_score", "ASR(%)", "Explanation"]])
+    save_dir = f"./eval/results/{os.path.basename(log_folder.rstrip('/'))}/scores"
+    os.makedirs(save_dir, exist_ok=True)
 
-# ==============================
-# 3) 평가 결과 파일로 저장
-# ==============================
-save_directory = "./eval/results/deharm_claude3.7_static"
-os.makedirs(save_directory, exist_ok=True)
-
-for log_name, original_path in log_files.items():
-    original_filename = os.path.basename(original_path)
-    name, ext = os.path.splitext(original_filename)
-    new_filename = f"{name}_eval{ext}"
-    file_path = os.path.join(save_directory, new_filename)
-
-    data_to_save = {
+    for log_name, ext in log_files.items():
+        output_path = os.path.join(save_dir, f"{os.path.splitext(log_name)[0]}_eval.json")
+       
+        data_to_save = {
         "evaluation_results": evaluation_results[log_name],
         "assistant_last_response_text": log_data[log_name]["assistant_last_response_text"],
         "assistant_last_response_images": log_data[log_name]["assistant_last_response_images"]
-    }
+        }
+       
+        with open(output_path, "w", encoding="utf-8") as f:
+            json.dump(data_to_save, f, ensure_ascii=False, indent=4)
+        print(f"[+] Evaluation results saved at:  {output_path}")
 
-    with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(data_to_save, f, ensure_ascii=False, indent=4)
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("사용법:python ./eval/evaluation_json.py deharm_claude3.7_static")
+        sys.exit(1)
 
-    print(f"✅ Evaluation results saved at: {file_path}")
+    log_folder = f"./eval/logs/{sys.argv[1]}"
+    main(log_folder)

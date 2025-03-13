@@ -48,6 +48,39 @@ def move_file(src, dest_folder):
     else:
         print(f"[!] 파일을 찾지 못했습니다: {src}")
 
+def move_all_files(src_folder, dest_folder, extension=".json"):
+    """
+    src 폴더 내 모든 특정 확장자 파일을 dest_folder의 동일한 폴더명으로 이동
+    """
+    if not os.path.exists(src_folder):
+        print(f"[!] 원본 폴더를 찾지 못했습니다: {src_folder}")
+        return
+
+    # 원본 폴더의 폴더명 추출
+    subfolder_name = os.path.basename(src_folder.rstrip('/'))
+    final_dest_folder = os.path.join(dest_folder, subfolder_name)
+
+    os.makedirs(final_dest_folder, exist_ok=True)
+
+    moved = False
+    for file in os.listdir(src_folder):
+        if file.endswith(extension):
+            src_file = os.path.join(src_folder, file)
+            dest_file = os.path.join(final_dest_folder, file)
+
+            if os.path.exists(dest_file):
+                os.remove(dest_file)
+                print(f"[!] 기존 파일 삭제: {dest_file}")
+
+            shutil.move(src_file, final_dest_folder)
+            print(f"[+] {src_file} → {final_dest_folder} 이동 완료")
+            moved = True
+    
+    if not moved:
+        print(f"[!] {src_folder}에 이동할 {extension} 파일이 없습니다.")
+
+
+
 def run_attack_generation():
     """
     1) 공격 JSON 생성 (Scene Change Task 삽입 포함)
@@ -120,17 +153,21 @@ def run_attack(generated_csv="./attack/result/result.csv", column_name="dynamic_
     run_formatter(generated_csv, column_name)
     run_docker_run()
 
-def run_evaluation(attack_log): #attack_log = "./claude-cua/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log/result.json"
+def run_evaluation(log_folder):
     """
-    1) attack/result.json → eval/logs 폴더로 이동
-    2) 평가 스크립트 실행 (evaluation_json.py)
+    Input: attack_log_folder - 
+    평가 시작:
+    1) attack_log_folder 내 JSON 결과 로그 파일들을 eval/logs/[폴더명]으로 이동
+    2) 평가 및 점수 계산 스크립트 실행
     """
     print("[+] 평가 시작...")
+    attack_log_folder = f"./claude-cua/computer-use-demo/computer_use_demo/log/{log_folder}"
     eval_log_folder = "./eval/logs/"
-    move_file(attack_log, eval_log_folder)
-    # 평가 스크립트 실행
-    subprocess.run(["python3", EVALUATION_SCRIPT], check=True)
-    subprocess.run(["python3", CALCULATE_SCORE_SCRIPT], check=True)
+
+    move_all_files(attack_log_folder, eval_log_folder, extension=".json")
+
+    subprocess.run(["python3", EVALUATION_SCRIPT, log_folder], check=True)
+    subprocess.run(["python3", CALCULATE_SCORE_SCRIPT, log_folder], check=True)
 
 def run_dynamic_attack():
     """
@@ -145,10 +182,10 @@ def main():
     parser.add_argument("--attack-gen", action="store_true", help="공격 JSON 생성만 수행")
     parser.add_argument("--formatter", nargs=2, metavar=("generated_csv", "column_name"), help="포맷터 실행")
     parser.add_argument("--docker-run", action="store_true", help="Docker 실행만 수행")
-    parser.add_argument("--attack", nargs=2, metavar=("generated_csv", "column_name"), help="공격 생성 + 포매터 + Docker 실행")
-    parser.add_argument("--evaluate", metavar="attack_log", help="평가 실행")
+    parser.add_argument("--attack",  nargs=2, metavar=("generated_csv", "column_name"), help="공격 생성 + 포매터 + Docker 실행")
+    parser.add_argument("--evaluate",nargs=1, metavar="log_folder", help="평가 실행")
     parser.add_argument("--dynamic", action="store_true", help="Dynamic Attack 실행")
-    parser.add_argument("--all", nargs=3, metavar=("generated_csv", "column_name", "attack_log"), help="전체 파이프라인 실행")
+    parser.add_argument("--all", nargs=3, metavar=("generated_csv", "column_name", "log_folder"), help="전체 파이프라인 실행")
 
     args = parser.parse_args()
     
@@ -165,14 +202,14 @@ def main():
         run_attack(args.formatter[0], args.formatter[1])
 
     if args.evaluate:
-        run_evaluation(args.evaluate)
+        run_evaluation(args.evaluate[0])
 
     if args.dynamic:
         run_dynamic_attack()
 
     if args.all:
-        run_attack(args.formatter[0], args.formatter[1])
-        run_evaluation(args.formatter[2])
+        run_attack(args.all[0], args.all[1])
+        run_evaluation(args.all[2])
         run_dynamic_attack()
 
 if __name__ == "__main__":
