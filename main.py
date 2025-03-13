@@ -143,7 +143,7 @@ def run_docker_run():
     # shell=True 로 서브셸에서 docker run ...을 실행
     subprocess.run(docker_cmd_str, shell=True, check=True)
 
-def run_attack(generated_csv="./attack/result/result.csv", column_name="dynamic_response_round_1"):
+def run_attack(attack_name, column_name="dynamic_response_round_1"):
     """
     (기존 Attack 단계처럼)
     1) 공격 JSON 생성
@@ -151,7 +151,7 @@ def run_attack(generated_csv="./attack/result/result.csv", column_name="dynamic_
     3) Docker 실행
     """
     run_attack_generation()
-    run_formatter(generated_csv, column_name)
+    run_formatter(attack_name, column_name)
     run_docker_run()
 
 def run_evaluation(log_folder):
@@ -181,12 +181,12 @@ def main():
     parser = argparse.ArgumentParser(description="Main Controller for Attack / Docker / Evaluation / Dynamic")
     # action="store_true" 추가적인 값을 받을 수 있는 파라미터,nargs와 함께 쓸 수 없음.
     parser.add_argument("--attack-gen", action="store_true", help="공격 JSON 생성만 수행")
-    parser.add_argument("--formatter", nargs=2, metavar=("generated_csv", "column_name"), help="포맷터 실행")
+    parser.add_argument("--formatter", nargs=2, metavar=("attack_name", "column_name"), help="포맷터 실행")
     parser.add_argument("--docker-run", action="store_true", help="Docker 실행만 수행")
-    parser.add_argument("--attack",  nargs=2, metavar=("generated_csv", "column_name"), help="공격 생성 + 포매터 + Docker 실행")
+    parser.add_argument("--attack",  nargs=2, metavar=("attack_name", "column_name"), help="공격 생성 + 포매터 + Docker 실행")
     parser.add_argument("--evaluate",nargs=1, metavar="log_folder", help="평가 실행")
     parser.add_argument("--dynamic", action="store_true", help="Dynamic Attack 실행")
-    parser.add_argument("--all", nargs=3, metavar=("generated_csv", "column_name", "log_folder"), help="전체 파이프라인 실행")
+    parser.add_argument("--all", nargs=3, metavar=("attack_name", "column_name", "log_folder"), help="전체 파이프라인 실행")
 
     args = parser.parse_args()
     
@@ -209,8 +209,8 @@ def main():
         run_dynamic_attack()
 
     if args.all:
-        run_attack(args.all[0], args.all[1])
-        run_evaluation(args.all[2])
+        run_attack(args.all[0], args.all[1]) 
+        run_evaluation(args.all[2]) # subprocess.run -> docker 종료 직후 시작
         run_dynamic_attack()
 
 if __name__ == "__main__":
