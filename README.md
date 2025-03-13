@@ -81,9 +81,11 @@ main.py 는 CLI 인자로 공격 생성/평가/동적 공격을 분리 실행하
 1. Static Attack만 실행
 
 ```bash
-python3 main.py --attack
+python main.py --attack ./attack/result/result.csv dynamic_response_round_1
 python3 main.py --attack-gen
 python3 main.py --docker-run
+python main.py --formatter ./attack/result/test.csv dynamic_response_round_1
+
 ```
 * 공격 JSON 생성 (Scene Change Task 삽입)
 * 생성된 JSON → computer_use_demo/data 폴더로 이동
@@ -92,7 +94,7 @@ python3 main.py --docker-run
 2. Evaluation만 실행
 
 ```bash
-python3 main.py --evaluate
+python main.py --evaluate ./attack/result/result.json
 ```
 * Docker 결과(attack/result.json)를 eval/logs로 이동
 * evaluation_json.py 스크립트 실행 → 수치 계산 등
@@ -108,7 +110,8 @@ python3 main.py --dynamic
 
 
 ```bash
-python3 main.py --all
+python main.py --all ./attack/result/result.csv dynamic_response_round_1 ./attack/result/result.json
+
 ```
 * 공격 생성 → 공격 진행 → 평가 → 동적 공격 순으로 자동 실행.
 

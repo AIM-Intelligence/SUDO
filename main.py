@@ -10,13 +10,14 @@ ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 # ===== 경로 설정 =====
 ATTACK_SCRIPT = "./attack/attack_generation.py"
 EVALUATION_SCRIPT = "./eval/evaluation_json.py"
+CALCULATE_SCORE_SCRIPT = "./eval/calculate_score.py"
 DYNAMIC_ATTACK_SCRIPT = "./dynamic_attack/dynamic_attack.py"
 AUTO_SCENECHG_SCRIPT = "./formatter/auto-scene/auto_scnchg.py"
 CONVERT_FORMAT_SCRIPT = "./formatter/csv2json/convert_format.py"
 
 # 공격 결과 로그 파일 & 이동 경로
-ATTACK_LOG = "./claude-cua/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log/result.json"
-EVAL_LOG_FOLDER = "./eval/logs/"
+# ATTACK_LOG = "./claude-cua/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log/result.json"
+# EVAL_LOG_FOLDER = "./eval/logs/"
 
 # ===== Docker 실행 명령어 =====
 DOCKER_COMMAND = [
@@ -34,16 +35,18 @@ DOCKER_COMMAND = [
 ]
 
 def move_file(src, dest_folder):
-    """
-    src 파일을 dest_folder로 이동하는 함수
-    """
+    dest_path = os.path.join(dest_folder, os.path.basename(src))
+
     if os.path.exists(src):
+        # 목적지에 파일이 이미 존재하면 삭제 후 이동
+        if os.path.exists(dest_path):
+            os.remove(dest_path)
+            print(f"[!] 기존 파일을 삭제했습니다: {dest_path}")
+
         shutil.move(src, dest_folder)
         print(f"[+] {src} → {dest_folder} 이동 완료")
-        return True
     else:
         print(f"[!] 파일을 찾지 못했습니다: {src}")
-        return False
 
 def run_attack_generation():
     """
@@ -52,41 +55,50 @@ def run_attack_generation():
     print("[+] 공격 JSON 생성 중...")
     subprocess.run(["python3", ATTACK_SCRIPT], check=True)
 
-def run_fommatter(generated_csv): #확장자로 공격이 생성된 column 이름 필요, 각 스크립트 원본 폴더 파라미터 빼기 필요.
+def run_formatter(generated_csv, column_name):
     """
     generated_csv: ./attack/result 내부에 존재.
+    column_name: CSV → JSON 변환 시 사용하는 column 이름
+
     1) 생성된 CSV를 formatter로 이동
-    2) JSON으로 변환
-    3) 자동화 가능한 JSON(_auto.json)으로 변환
+    2) JSON으로 변환 (파라미터로 컬럼명 전달)
+    3) 자동화 가능한 JSON(_auto.json)으로 변환 (파라미터 전달)
     4) cua/.../data 경로로 이동
     """
     # 경로 설정
     formatter_csv_folder = "./formatter/csv2json/csv"
+    formatter_json_folder = "./formatter/csv2json/json"
     before_auto_folder = "./formatter/auto-scene/before_auto_scnchg"
     after_auto_folder = "./formatter/auto-scene/after_auto_scnchg"
-    data_folder = "./computer-use-demo/computer_use_demo/data/"
+    data_folder = "./claude-cua/computer-use-demo/computer_use_demo/data/"
+    
     print("[+] formatter 실행 중...")
-     # 1. CSV 파일 이동
+
+    # 1. CSV 파일 이동
     move_file(generated_csv, formatter_csv_folder)
 
-    # 2. CSV → JSON 변환
-    subprocess.run(["python3", CONVERT_FORMAT_SCRIPT], check=True)
-
-    # 변환된 json 파일명 얻기
     base_name = os.path.splitext(os.path.basename(generated_csv))[0]
-    generated_json = os.path.join(formatter_csv_folder, base_name + ".json")
+
+    # 2. CSV → JSON 변환 (명시적 파일명 및 컬럼 전달)
+    subprocess.run([
+        "python3", CONVERT_FORMAT_SCRIPT, base_name, column_name
+    ], check=True)
+
+    generated_json = os.path.join(formatter_json_folder, base_name + ".json")
 
     # 3. JSON 파일을 자동화 전 폴더로 이동
     move_file(generated_json, before_auto_folder)
 
-    # 4. 자동화 가능한 JSON(_auto.json)으로 변환
-    subprocess.run(["python3", AUTO_SCENECHG_SCRIPT], check=True)
+    # 4. 자동화 가능한 JSON(_auto.json)으로 변환 (명시적 파일명 전달)
+    subprocess.run([
+        "python3", AUTO_SCENECHG_SCRIPT, base_name
+    ], check=True)
 
-    # 자동화된 JSON 파일명
     automatic_json = os.path.join(after_auto_folder, base_name + "_auto.json")
 
     # 5. 최종 JSON을 data 폴더로 이동
     move_file(automatic_json, data_folder)
+
 
 def run_docker_run():
     """
@@ -97,7 +109,7 @@ def run_docker_run():
     # shell=True 로 서브셸에서 docker run ...을 실행
     subprocess.run(docker_cmd_str, shell=True, check=True)
 
-def run_attack():
+def run_attack(generated_csv="./attack/result/result.csv", column_name="dynamic_response_round_1"):
     """
     (기존 Attack 단계처럼)
     1) 공격 JSON 생성
@@ -105,7 +117,7 @@ def run_attack():
     3) Docker 실행
     """
     run_attack_generation()
-    run_fommatter()
+    run_formatter(generated_csv, column_name)
     run_docker_run()
 
 def run_evaluation(attack_log): #attack_log = "./claude-cua/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log/result.json"
@@ -118,6 +130,7 @@ def run_evaluation(attack_log): #attack_log = "./claude-cua/computer-use-demo/co
     move_file(attack_log, eval_log_folder)
     # 평가 스크립트 실행
     subprocess.run(["python3", EVALUATION_SCRIPT], check=True)
+    subprocess.run(["python3", CALCULATE_SCORE_SCRIPT], check=True)
 
 def run_dynamic_attack():
     """
@@ -128,39 +141,39 @@ def run_dynamic_attack():
 
 def main():
     parser = argparse.ArgumentParser(description="Main Controller for Attack / Docker / Evaluation / Dynamic")
-    # 공격 관련
+    # action="store_true" 추가적인 값을 받을 수 있는 파라미터,nargs와 함께 쓸 수 없음.
     parser.add_argument("--attack-gen", action="store_true", help="공격 JSON 생성만 수행")
+    parser.add_argument("--formatter", nargs=2, metavar=("generated_csv", "column_name"), help="포맷터 실행")
     parser.add_argument("--docker-run", action="store_true", help="Docker 실행만 수행")
-    parser.add_argument("--attack", action="store_true", help="공격 생성 + Docker 실행 (연속)")
-
-    # 평가, Dynamic Attack
-    parser.add_argument("--evaluate", action="store_true", help="평가 실행")
+    parser.add_argument("--attack", nargs=2, metavar=("generated_csv", "column_name"), help="공격 생성 + 포매터 + Docker 실행")
+    parser.add_argument("--evaluate", metavar="attack_log", help="평가 실행")
     parser.add_argument("--dynamic", action="store_true", help="Dynamic Attack 실행")
-
-    # 전체 파이프라인
-    parser.add_argument("--all", action="store_true", help="Attack (JSON+Docker) → Evaluate → Dynamic 순서 전체 실행")
+    parser.add_argument("--all", nargs=3, metavar=("generated_csv", "column_name", "attack_log"), help="전체 파이프라인 실행")
 
     args = parser.parse_args()
+    
+    if args.attack_gen:
+        run_attack_generation()
 
-    if args.all:
-        run_attack()
-        run_evaluation()
-        run_dynamic_attack()
-    else:
-        if args.attack_gen:
-            run_attack_generation()
+    if args.formatter:
+        run_formatter(args.formatter[0], args.formatter[1])
 
-        if args.docker_run:
+    if args.docker_run:
             run_docker_run()
 
-        if args.attack:
-            run_attack()
+    if args.attack:
+        run_attack(args.formatter[0], args.formatter[1])
 
-        if args.evaluate:
-            run_evaluation()
+    if args.evaluate:
+        run_evaluation(args.evaluate)
 
-        if args.dynamic:
-            run_dynamic_attack()
+    if args.dynamic:
+        run_dynamic_attack()
+
+    if args.all:
+        run_attack(args.formatter[0], args.formatter[1])
+        run_evaluation(args.formatter[2])
+        run_dynamic_attack()
 
 if __name__ == "__main__":
     main()

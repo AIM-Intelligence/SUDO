@@ -1,36 +1,40 @@
-import json
-import os 
+import json, sys
+
+"""
+사용 예시: 
+python gen_auto_attack.py o1_dynamic_1
+다른 Scene Change 파일 지정 시:
+python gen_auto_attack.py o1_dynamic_1 custom_scenechg.json
+"""
+
+base_name = sys.argv[1]
+scenechg_file = sys.argv[2] if len(sys.argv) > 2 else "./formatter/auto-scene/harmGUI_scnchg.json"
+
+input_file = f'./formatter/auto-scene/before_auto_scnchg/{base_name}.json'
+output_file = f'./formatter/auto-scene/after_auto_scnchg/{base_name}_auto.json'
 
 def load_json(file_path):
     with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)
 
 def insert_scenechg_with_urls(scenechg_data, main_data):
-    """
-    inserts scanechg data (45) alternately with the existing JSON list (main_data)
-    """
     modified_data = []
     index = 0
 
     for item in main_data:
         if index < len(scenechg_data):
-            modified_data.append(scenechg_data[index])  #scenechg
+            modified_data.append(scenechg_data[index])
             index += 1
         modified_data.append(item) 
-    
+
     return modified_data
 
-def gen_auto_attack(input_file, output_file):
-    scenechg_data = load_json("harmGUI_scnchg.json")
-    attack_task = input_file
-    attack_w_scnchg = insert_scenechg_with_urls(scenechg_data, load_json(attack_task))
-    
-    #output_file = os.path.splitext(attack_task)[0] + "_auto.json"
-    with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(attack_w_scnchg, f, indent=4, ensure_ascii=False)
+scenechg_data = load_json(scenechg_file)
+main_data = load_json(input_file)
 
-    print(f"Save'{output_file}' completed.")
+attack_w_scnchg = insert_scenechg_with_urls(scenechg_data, main_data)
 
+with open(output_file, "w", encoding="utf-8") as f:
+    json.dump(attack_w_scnchg, f, indent=4, ensure_ascii=False)
 
-file_name = "o1_dynamic_1"
-gen_auto_attack(f'./before_auto_scnchg/{file_name}.json', f'./after_auto_scnchg/{file_name}_auto.json')
+print(f"Save '{output_file}' completed.")
