@@ -88,7 +88,7 @@ def run_attack_generation():
     print("[+] 공격 JSON 생성 중...")
     subprocess.run(["python3", ATTACK_SCRIPT], check=True)
 
-def run_formatter(generated_csv, column_name):
+def run_formatter(attack_name, column_name):
     """
     generated_csv: ./attack/result 내부에 존재.
     column_name: CSV → JSON 변환 시 사용하는 column 이름
@@ -99,6 +99,7 @@ def run_formatter(generated_csv, column_name):
     4) cua/.../data 경로로 이동
     """
     # 경로 설정
+    attack_result_folder = "./attack/result"
     formatter_csv_folder = "./formatter/csv2json/csv"
     formatter_json_folder = "./formatter/csv2json/json"
     before_auto_folder = "./formatter/auto-scene/before_auto_scnchg"
@@ -108,28 +109,28 @@ def run_formatter(generated_csv, column_name):
     print("[+] formatter 실행 중...")
 
     # 1. CSV 파일 이동
-    move_file(generated_csv, formatter_csv_folder)
+    move_file(f"{attack_result_folder}/{attack_name}.csv", formatter_csv_folder)
 
-    base_name = os.path.splitext(os.path.basename(generated_csv))[0]
+    #base_name = os.path.splitext(os.path.basename(generated_csv))[0]
 
     # 2. CSV → JSON 변환 (명시적 파일명 및 컬럼 전달)
     subprocess.run([
-        "python3", CONVERT_FORMAT_SCRIPT, base_name, column_name
+        "python3", CONVERT_FORMAT_SCRIPT, attack_name, column_name
     ], check=True)
 
-    generated_json = os.path.join(formatter_json_folder, base_name + ".json")
+    generated_json = os.path.join(formatter_json_folder, attack_name + ".json")
 
     # 3. JSON 파일을 자동화 전 폴더로 이동
     move_file(generated_json, before_auto_folder)
 
     # 4. 자동화 가능한 JSON(_auto.json)으로 변환 (명시적 파일명 전달)
     subprocess.run([
-        "python3", AUTO_SCENECHG_SCRIPT, base_name
+        "python3", AUTO_SCENECHG_SCRIPT, attack_name
     ], check=True)
 
-    automatic_json = os.path.join(after_auto_folder, base_name + "_auto.json")
+    automatic_json = os.path.join(after_auto_folder, attack_name + "_auto.json")
 
-    # 5. 최종 JSON을 data 폴더로 이동
+    # 5. 최종 JSON을 claude-cua data 폴더로 이동
     move_file(automatic_json, data_folder)
 
 

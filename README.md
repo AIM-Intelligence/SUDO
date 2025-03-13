@@ -83,8 +83,8 @@ main.py 는 CLI 인자로 공격 생성/평가/동적 공격을 분리 실행하
 ```bash
 python main.py --attack ./attack/result/result.csv dynamic_response_round_1
 python3 main.py --attack-gen
-python3 main.py --docker-run
-python main.py --formatter ./attack/result/test.csv dynamic_response_round_1
+python3 main.py --docker-run #[명령어 완료, 고정]
+python main.py --formatter claude3.7_dynamic_1 dynamic_response_round_1 #[csv이름, column이름: 명령어 완료, 고정]
 
 ```
 * 공격 JSON 생성 (Scene Change Task 삽입)
@@ -94,7 +94,7 @@ python main.py --formatter ./attack/result/test.csv dynamic_response_round_1
 2. Evaluation만 실행
 
 ```bash
-python main.py --evaluate deharm_claude3.7_static
+python main.py --evaluate deharm_claude3.7_static #[명령어 완료, 고정]
 ```
 * Docker 결과(attack/result.json)를 eval/logs로 이동
 * evaluation_json.py 스크립트 실행 → 수치 계산 등
@@ -102,7 +102,7 @@ python main.py --evaluate deharm_claude3.7_static
 3. Dynamic Attack만 실행
 
 ```bash
-python3 main.py --dynamic
+python3 main.py --dynamic 
 ```
 * 평가 결과(eval/logs 폴더 등)를 기반으로 Dynamic Attack 생성
 
@@ -110,7 +110,7 @@ python3 main.py --dynamic
 
 
 ```bash
-python main.py --all ./attack/result/result.csv dynamic_response_round_1 ./attack/result/result.json
+python main.py --all ./attack/result/result.csv dynamic_response_round_1 deharm_claude3.7_static #[3번째 인자 고정]
 
 ```
 * 공격 생성 → 공격 진행 → 평가 → 동적 공격 순으로 자동 실행.
