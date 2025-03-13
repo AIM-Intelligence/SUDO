@@ -15,10 +15,6 @@ DYNAMIC_ATTACK_SCRIPT = "./dynamic_attack/dynamic_attack.py"
 AUTO_SCENECHG_SCRIPT = "./formatter/auto-scene/auto_scnchg.py"
 CONVERT_FORMAT_SCRIPT = "./formatter/csv2json/convert_format.py"
 
-# 공격 결과 로그 파일 & 이동 경로
-# ATTACK_LOG = "./claude-cua/computer-use-demo/computer_use_demo/log:/home/computeruse/computer_use_demo/log/result.json"
-# EVAL_LOG_FOLDER = "./eval/logs/"
-
 # ===== Docker 실행 명령어 =====
 DOCKER_COMMAND = [
     "docker", "run",
@@ -186,7 +182,7 @@ def main():
     parser.add_argument("--attack",  nargs=2, metavar=("attack_name", "column_name"), help="공격 생성 + 포매터 + Docker 실행")
     parser.add_argument("--evaluate",nargs=1, metavar="log_folder", help="평가 실행")
     parser.add_argument("--dynamic", action="store_true", help="Dynamic Attack 실행")
-    parser.add_argument("--all", nargs=3, metavar=("attack_name", "column_name", "log_folder"), help="전체 파이프라인 실행")
+    parser.add_argument("--all", nargs=2, metavar=("attack_name", "column_name"), help="전체 파이프라인 실행")
 
     args = parser.parse_args()
     
@@ -210,7 +206,7 @@ def main():
 
     if args.all:
         run_attack(args.all[0], args.all[1]) 
-        run_evaluation(args.all[2]) # subprocess.run -> docker 종료 직후 시작
+        run_evaluation(args.all[0]) # subprocess.run -> docker 종료 직후 시작
         run_dynamic_attack()
 
 if __name__ == "__main__":
