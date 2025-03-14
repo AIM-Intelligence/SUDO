@@ -2,6 +2,8 @@
 
 이 레포지토리는 Computer use agent를 대상으로 **Attack 자동 생성**, **Evaluation**, **Dynamic Attack** 생성을 한 번에 관리하는 시스템입니다. **Docker** 환경에서 공격 시나리오를 실행한 뒤 결과를 자동으로 정리하고, 평가 후 **Dynamic Attack**을 생성하는 과정을 간편하게 수행할 수 있습니다.
 
+![SUDO Attack Framework Architecture](sudo_figure.png)
+
 ---
 
 ## 목차
