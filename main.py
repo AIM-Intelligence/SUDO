@@ -8,7 +8,7 @@ load_dotenv(dotenv_path=".env")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
 # ===== 경로 설정 =====
-ATTACK_SCRIPT = "./attack/attack_generation.py"
+ATTACK_SCRIPT = "./attack/static_attack.py"
 EVALUATION_SCRIPT = "./eval/evaluation_json.py"
 CALCULATE_SCORE_SCRIPT = "./eval/calculate_score.py"
 DYNAMIC_ATTACK_SCRIPT = "./dynamic_attack/dynamic_attack.py"
@@ -77,12 +77,12 @@ def move_all_files(src_folder, dest_folder, extension=".json"):
 
 
 
-def run_attack_generation():
+def run_attack_generation(attack_name, model_name):
     """
     1) 공격 JSON 생성 (Scene Change Task 삽입 포함)
     """
     print("[+] 공격 JSON 생성 중...")
-    subprocess.run(["python3", ATTACK_SCRIPT], check=True)
+    subprocess.run(["python3", ATTACK_SCRIPT,attack_name, model_name], check=True)
 
 def run_formatter(attack_name, column_name):
     """
@@ -176,7 +176,7 @@ def run_dynamic_attack():
 def main():
     parser = argparse.ArgumentParser(description="Main Controller for Attack / Docker / Evaluation / Dynamic")
     # action="store_true" 추가적인 값을 받을 수 있는 파라미터,nargs와 함께 쓸 수 없음.
-    parser.add_argument("--attack-gen", action="store_true", help="공격 JSON 생성만 수행")
+    parser.add_argument("--attack-gen", nargs=2, metavar=("attack_name", "model_name"), help="공격 JSON 생성만 수행")
     parser.add_argument("--formatter", nargs=2, metavar=("attack_name", "column_name"), help="포맷터 실행")
     parser.add_argument("--docker-run", action="store_true", help="Docker 실행만 수행")
     parser.add_argument("--attack",  nargs=2, metavar=("attack_name", "column_name"), help="공격 생성 + 포매터 + Docker 실행")
@@ -187,7 +187,7 @@ def main():
     args = parser.parse_args()
     
     if args.attack_gen:
-        run_attack_generation()
+        run_attack_generation(args.attack_gen[0], args.attack_gen[1])
 
     if args.formatter:
         run_formatter(args.formatter[0], args.formatter[1])

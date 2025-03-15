@@ -84,7 +84,7 @@ main.py 는 CLI 인자로 공격 생성/평가/동적 공격을 분리 실행하
 
 ```bash
 python main.py --attack ./attack/result/result.csv dynamic_response_round_1
-python3 main.py --attack-gen
+python3 main.py --attack-gen o1_static static
 python3 main.py --docker-run #[명령어 완료, 고정]
 python main.py --formatter claude3.7_dynamic_1 dynamic_response_round_1 #[csv이름, column이름: 명령어 완료, 고정]
 
