@@ -3,7 +3,7 @@
 이 레포지토리는 Computer use agent를 대상으로 **Attack 자동 생성**, **Evaluation**, **Dynamic Attack** 생성을 한 번에 관리하는 시스템입니다. **Docker** 환경에서 공격 시나리오를 실행한 뒤 결과를 자동으로 정리하고, 평가 후 **Dynamic Attack**을 생성하는 과정을 간편하게 수행할 수 있습니다.
 
 ![SUDO Attack Framework Architecture](sudo_figure.png)
-
+-> TODO: figure new version upload
 ---
 
 ## 목차
@@ -20,6 +20,8 @@
 ## 개요
 
 - **Attack Generation**:  
+Detox2Tox is a pipeline that transforms a malicious instruction into a detoxed task to avoid safety guardrails, obtains a plan from a well-aligned model, and then reintroduces the malicious details at the final step — preserving the original harmful goal while stealthily bypassing these defenses.
+
   공격 JSON을 생성하고, **Scene Change Task**를 삽입.  
   결과물은 `computer_use_demo/data/` 폴더에 복사.  
   이후 **Docker**로 공격을 실행해 로그를 생성.
@@ -33,7 +35,7 @@
 
 ---
 
-## 폴더 구조
+## 폴더 구조(수정 필요)
 
 ```plaintext
 sudo
@@ -80,13 +82,17 @@ Docker 컨테이너 내부에서 사용할 API KEY를 설정해야 합니다.
 ## 사용 방법
 main.py 는 CLI 인자로 공격 생성/평가/동적 공격을 분리 실행하거나, 한 번에 처리.
 
+주요 인자
+* <attack_name> =  <model_name>_<tactic> #e.g.o1_static
+
 1. Static Attack만 실행
 
 ```bash
-python main.py --attack ./attack/result/result.csv dynamic_response_round_1
-python3 main.py --attack-gen o1_static o1  #[명령어 완료, 고정]
-python3 main.py --docker-run #[명령어 완료, 고정]
-python main.py --formatter claude3.7_dynamic_1 dynamic_response_round_1 #[csv이름, column이름: 명령어 완료, 고정]
+python main.py --attack <attack_name>
+python3 main.py --attack-gen <attack_name>  
+python3 main.py --docker-run 
+python main.py --formatter <attack_name>
+완료, 고정]
 
 ```
 * 공격 JSON 생성 (Scene Change Task 삽입)
@@ -96,7 +102,7 @@ python main.py --formatter claude3.7_dynamic_1 dynamic_response_round_1 #[csv이
 2. Evaluation만 실행
 
 ```bash
-python main.py --evaluate deharm_claude3.7_static #[명령어 완료, 고정]
+python main.py --evaluate <log_folder> #e.g. deharm_claude3.7_static
 ```
 * Docker 결과(attack/result.json)를 eval/logs로 이동
 * evaluation_json.py 스크립트 실행 → 수치 계산 등
@@ -104,7 +110,7 @@ python main.py --evaluate deharm_claude3.7_static #[명령어 완료, 고정]
 3. Dynamic Attack만 실행
 
 ```bash
-python3 main.py --dynamic 
+python3 main.py --dynamic <attack_name> #[명령어 완료, 고정]
 ```
 * 평가 결과(eval/logs 폴더 등)를 기반으로 Dynamic Attack 생성
 
@@ -112,7 +118,7 @@ python3 main.py --dynamic
 
 
 ```bash
-python main.py --all ./attack/result/result.csv dynamic_response_round_1 deharm_claude3.7_static #[3번째 인자 고정]
+python main.py --all <attack_name> #e.g. claude3.7_static
 
 ```
 * 공격 생성 → 공격 진행 → 평가 → 동적 공격 순으로 자동 실행.

@@ -11,6 +11,7 @@ import pandas as pd
 from dotenv import load_dotenv
 import sys
 import re
+from tqdm import tqdm
 
 ##############################################################################
 #python dynamic_eval.py /content/gpto1_dynamic_1.csv /content/gpto1_dynamic_1_out.csv /content/static_file
@@ -54,11 +55,11 @@ def dynamic(instructions, json_file_path):
     else:
         assistant_last_response_images = ""
 
-    print("Refused Score:", refused_score)
-    print("Rubric Score:", rubric_score)
-    print("ASR(%):", asr_percentage)
-    print("Explanation:", explanation)
-    print("Assistant Last Response Text:", assistant_last_response_text)
+    # print("Refused Score:", refused_score)
+    # print("Rubric Score:", rubric_score)
+    # print("ASR(%):", asr_percentage)
+    # print("Explanation:", explanation)
+    # print("Assistant Last Response Text:", assistant_last_response_text)
 
     # 예시: 100%면 바로 passed
     if asr_percentage == 100:
@@ -145,20 +146,20 @@ def build_file_mapping(json_folder):
 
 def main(csv_file_path, output_csv_path, json_folder):
     # 1) 빌드 맵핑
-    file_mapping = build_file_mapping(json_folder)
+    file_mapping = build_file_mapping(json_folder) #평가 결과
 
     # 2) CSV 불러오기
     df = pd.read_csv(csv_file_path)
 
     # 3) 각 row 순회
-    for index, row in df.iterrows():
+    for index, row in tqdm(df.iterrows(), total=len(df), desc="Generating Dynamic Attack", unit="index"):
         instructions = row.get("static", "")
         identifier = row.get("identifier", "").strip()
 
-        print(f"Processing row with identifier {identifier} and static attack: {instructions}")
+        # print(f"Processing row with identifier {identifier} and static attack: {instructions}")
         json_file_path = file_mapping.get(identifier)
         if json_file_path:
-            print(f"Processing row with identifier '{identifier}' using file '{json_file_path}'")
+            # print(f"Processing row with identifier '{identifier}' using file '{json_file_path}'")
             try:
                 result = dynamic(instructions, json_file_path)
             except Exception as e:
@@ -166,8 +167,8 @@ def main(csv_file_path, output_csv_path, json_folder):
             # CSV에 결과 저장
             df.loc[index, "dynamic_response_round_1"] = result
             df.to_csv(output_csv_path, index=False)
-            print("Dynamic Response:")
-            print(result)
+            # print("Dynamic Response:")
+            # print(result)
         else:
             print(f"No JSON file found for identifier: {identifier}")
 
@@ -182,7 +183,7 @@ def main(csv_file_path, output_csv_path, json_folder):
 if __name__ == "__main__":
     # 예시: python dynamic_eval.py /content/gpto1_dynamic_1.csv /content/gpto1_dynamic_1_out.csv /content/static_file
     if len(sys.argv) < 4:
-        print(f"Usage: python {sys.argv[0]} <csv_file_path> <output_csv_path> <json_folder>")
+        print(f"Usage: python {sys.argv[0]} <csv_file_path> <output_csv_path> <eval result>")
         sys.exit(1)
 
     csv_file_path   = sys.argv[1]
