@@ -83,8 +83,9 @@ Docker 컨테이너 내부에서 사용할 API KEY를 설정해야 합니다.
 main.py 는 CLI 인자로 공격 생성/평가/동적 공격을 분리 실행하거나, 한 번에 처리.
 
 주요 인자
-* <attack_name> =  <model_name>_<tactic> #e.g.o1_static
-
+```python
+attack_name =  f"{model_name}_{tactic} #e.g.o1_static, o1_dynamic-r1
+```
 1. Static Attack만 실행
 
 ```bash
@@ -102,7 +103,7 @@ python main.py --formatter <attack_name>
 2. Evaluation만 실행
 
 ```bash
-python main.py --evaluate <log_folder> #e.g. deharm_claude3.7_static
+python main.py --evaluate <attack_name> 
 ```
 * Docker 결과(attack/result.json)를 eval/logs로 이동
 * evaluation_json.py 스크립트 실행 → 수치 계산 등
