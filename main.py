@@ -201,9 +201,10 @@ def get_next_dynamic_name(model_name: str) -> str:
             current_n = int(match.group(1))
             if current_n > max_n:
                 max_n = current_n
-
-    next_n = max_n + 1
-    return f"{model_name}_dynamic-r{next_n}"
+                next_n = max_n + 1
+                return f"{model_name}_dynamic-r{next_n}"
+        else: 
+            return f"{model_name}_dynamic-r1"
 
 def run_dynamic_attack(attack_name):
     """

@@ -116,6 +116,7 @@ python main.py --evaluate <attack_name>
 ```bash
 python3 main.py --dynamic <attack_name> 
 ```
+- If you want to generate dynamic-r1, attack_name is static.**(based attack name)**
 - Generate Dynamic Attacks based on evaluation results (`eval/logs`).
 
 4. Run the full pipeline automatically (Attack → Evaluate → Dynamic):
