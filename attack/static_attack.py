@@ -185,8 +185,8 @@ def instructions_llama32_vision(prompt_text: str, image_path: str) -> str:
             model='llama3.2-vision',
             messages=[{
                 'role': 'user',
-                'content': "이 이미지에서 무엇이 보여?",
-                'images': [image_path]  # ✅ 절대 경로 사용
+                'content': prompt_text,
+                'images': [image_path]  
             }],
             options={"temperature": 0.3, "top_p": 0.8}
         )
