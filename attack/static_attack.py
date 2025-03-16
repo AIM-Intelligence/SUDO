@@ -180,17 +180,15 @@ def instructions_llama32_vision(prompt_text: str, image_path: str) -> str:
     """
     Llama3.2-Vision 모델을 사용하여 이미지 기반 응답을 생성
 """
-    if not image_path:
-        return "[X] 이미지 파일 없음"
-
     try:
         response = ollama.chat(
             model='llama3.2-vision',
             messages=[{
                 'role': 'user',
-                'content': prompt_text,
+                'content': "이 이미지에서 무엇이 보여?",
                 'images': [image_path]  # ✅ 절대 경로 사용
-            }]
+            }],
+            options={"temperature": 0.3, "top_p": 0.8}
         )
         return response.message.content
     except Exception as e:
