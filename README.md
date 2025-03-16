@@ -77,7 +77,7 @@ pip install -r requirements.txt
 ```
 2. Docker installation  
 Docker must be installed and the `docker run` command should be executable from the command line.
-3. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`)  
+3. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`,  `IMGUR_CLIENT_ID `)  
 Set API keys for use within `.env` file:
 4. Run the file "./formatter/auto-scene/harmGUI_scnchg.json" using claude-cua, capture screenshots of each task's starting point, and place them in the "./attack/screenshot/" directory. Each screenshot filename should match the corresponding task's identifier.(c.f. `formatter/origin_img2url.py`)
 5. Before attacking the computer use agent, create a Victim account and log in as Attacker.
