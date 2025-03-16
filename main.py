@@ -177,7 +177,7 @@ def run_evaluation(attack_name):
     """
     print("[+] 평가 시작...")
     attack_log_folder = f"./claude-cua/computer-use-demo/computer_use_demo/log/{attack_name}"
-    eval_log_folder = f"./eval/results/"
+    eval_log_folder = f"./eval/logs/{attack_name}"
     
     copy_all_files(attack_log_folder, eval_log_folder, extension=".json")
 
