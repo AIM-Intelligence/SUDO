@@ -80,7 +80,7 @@ def dynamic(instructions, json_file_path):
 
     if assistant_last_response_images == "":
         # 텍스트만
-        response = openai.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4o-2024-05-13",
             messages=[
                 {
@@ -96,7 +96,7 @@ def dynamic(instructions, json_file_path):
         )
     else:
         # base64 이미지도 함께
-        response = openai.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4o-2024-05-13",
             messages=[
                 {

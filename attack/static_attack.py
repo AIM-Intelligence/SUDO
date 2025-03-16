@@ -86,7 +86,7 @@ def generate_prompts_4o(prompt, system=""):
     """
     원본 코드: generate_prompts_4o => gpt-4o
     """
-    response = openai.chat.completions.create(
+    response = openai.ChatCompletion.create(
         model="gpt-4o",
         messages=[
             {"role": "system", "content": system},
@@ -99,7 +99,7 @@ def generate_prompts_4o_may(prompt, system=""):
     """
     원본 코드: generate_prompts => gpt-4o-2024-05-13
     """
-    response = openai.chat.completions.create(
+    response = openai.ChatCompletion.create(
         model="gpt-4o-2024-05-13",
         messages=[
             {"role": "system", "content": system},
@@ -170,7 +170,7 @@ def instructions_gpt(model_name, prompt_text: str, image_url: str) -> str:
             ],
         }
     ]
-    response = openai.chat.completions.create(
+    response = openai.ChatCompletion.create(
         model= model_name,
         messages=messages,
     )
