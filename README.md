@@ -78,10 +78,7 @@ pip install -r requirements.txt
 2. Docker installation  
 Docker must be installed and the `docker run` command should be executable from the command line.
 3. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`)  
-Set API keys for use within Docker containers:
-```bash
-export ANTHROPIC_API_KEY="YOUR_KEY_HERE"
-```
+Set API keys for use within `.env` file:
 4. Before attacking the computer use agent, create a Victim account and log in as Attacker.
 
 ## Usage
