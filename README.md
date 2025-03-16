@@ -77,7 +77,7 @@ pip install -r requirements.txt
 ```
 2. Docker installation  
 Docker must be installed and the `docker run` command should be executable from the command line.
-3. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`)  
+3. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`)  
 Set API keys for use within Docker containers:
 ```bash
 export ANTHROPIC_API_KEY="YOUR_KEY_HERE"
@@ -93,11 +93,12 @@ attack_name = f"{model_name}_{tactic}"  # e.g., o1_static, o1_dynamic-r1
 ```
 
 1. Execute only Static Attack:
-**Integrated command (includes all steps below):**
+
+* Integrated command (includes all steps below):
 ```bash
 python main.py --attack <attack_name>
 ```
-**Individual steps (manual execution):**
+* Individual steps (manual execution):
 ```bash
 python main.py --attack-gen <attack_name>
 python main.py --formatter <attack_name>  
