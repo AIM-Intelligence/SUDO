@@ -268,4 +268,4 @@ async def run_task_loop(http_logs, selected_file):
                 only_n_most_recent_images=st.session_state.only_n_most_recent_images,
             )
 
-        await asyncio.sleep(4)  # 4초 대기 (너무 빠른 반복 방지)
+        await asyncio.sleep(7)  # 4초 대기 (너무 빠른 반복 방지)
