@@ -47,6 +47,7 @@ sudo
 ├── claude-cua
 │   └── computer-use-demo
 │       └── computer_use_demo
+│           ├── attacktools# Handles automatic attacking and logging
 │           ├── data       # Folder where attack JSON files are moved
 │           └── log        # Logs generated within Docker
 ├── eval
