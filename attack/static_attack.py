@@ -188,13 +188,11 @@ def instructions_llama32_vision(prompt_text: str, image_path: str) -> str:
                 'content': prompt_text,
                 'images': [image_path]  
             }],
-            options={"temperature": 0.3, "top_p": 0.8}
+            options={"temperature": 0.3, "top_p": 0.8, "reset": True}
         )
         return response.message.content
     except Exception as e:
         print(f"[!] Llama3.2-Vision 요청 실패: {e}")
-        return "[X] 요청 실패"
-
 def instructions_gemini_flash(prompt_text: str, image_path: str) -> str:
     """
     gemini-2.0-flash 에 이미지 + 텍스트를 함께 전달하는 함수.

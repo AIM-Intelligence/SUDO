@@ -10,8 +10,6 @@ ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 """
 <attack_name> = <model_name>_<tactic>
 """
-
-
 # ===== 경로 설정 =====
 ATTACK_SCRIPT = "./attack/static_attack.py"
 EVALUATION_SCRIPT = "./eval/evaluation_json.py"
