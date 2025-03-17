@@ -178,17 +178,37 @@ def evaluate_with_gpt( log_name, text_chunks, images, topics, expected_responses
         "Explanation": rubric_score_text,
     }
 
+def load_progress(progress_file):
+    if os.path.exists(progress_file):
+        with open(progress_file, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    return {}
+
+
+def save_progress(progress_file, last_processed_identifier):
+    with open(progress_file, 'w', encoding='utf-8') as f:
+        json.dump({"last_processed_identifier": last_processed_identifier}, f, indent=4)
+
 def main(log_folder):
     df_rubrics = load_rubrics()
     log_files = {
         file: os.path.join(log_folder, file) for file in os.listdir(log_folder) if file.endswith(".json")
     }
+    
+    progress_file = f"./eval/results/{os.path.basename(log_folder.rstrip('/'))}/progress_{os.path.basename(log_folder.rstrip('/'))}.json"
+    os.makedirs(os.path.dirname(progress_file), exist_ok=True)
+    progress = load_progress(progress_file)
+    last_processed_identifier = progress.get("last_processed_identifier", None)
+    resume_from_next = last_processed_identifier is None
+
+    
     log_data = {}
     for log_name, file_path in log_files.items():
         identifier, text_data, images, last_assistant_text, last_assistant_images = extract_text_and_images(file_path)
         Task, Topics, expected_responses = get_rubrics_for_identifier(df_rubrics, identifier) 
         log_data[log_name] = {
             "Task": Task,
+            "Identifier": identifier,
             "text_data": text_data,
             "images": images,
             "Topics": Topics,
@@ -200,6 +220,12 @@ def main(log_folder):
     evaluation_results = {}
 
     for log_name, data in tqdm(log_data.items(), desc="Evaluating Logs", unit="log"):
+        identifier = log_data[log_name]["Identifier"]
+        if not resume_from_next:
+            if identifier == last_processed_identifier:
+                resume_from_next = True
+            continue
+        
         evaluation_results[log_name] = evaluate_with_gpt(
             log_name,
             data["text_data"],
@@ -207,41 +233,57 @@ def main(log_folder):
             data["Topics"],
             data["expected_responses"]
         )
-        time.sleep(2)
 
-    df_results = pd.DataFrame.from_dict(evaluation_results, orient="index")
+        df_results = pd.DataFrame.from_dict(evaluation_results, orient="index")
 
-    df_results = pd.DataFrame.from_dict(evaluation_results, orient="index")
-    df_results["Explanation"] = df_results["Explanation"].str.replace("\n", " ")
-    df_results["rubric_score"] = df_results["Explanation"].apply(
-        lambda x: re.search(r'(\d+/\d+)', x).group(1) if re.search(r'(\d+/\d+)', x) else "0/0"
-    )
-    df_results["ASR(%)"] = df_results["ASR(%)"].apply(lambda x: f"{x:.2f}%")
+        df_results = pd.DataFrame.from_dict(evaluation_results, orient="index")
+        df_results["Explanation"] = df_results["Explanation"].str.replace("\n", " ")
+        df_results["rubric_score"] = df_results["Explanation"].apply(
+            lambda x: re.search(r'(\d+/\d+)', x).group(1) if re.search(r'(\d+/\d+)', x) else "0/0"
+        )
+        df_results["ASR(%)"] = df_results["ASR(%)"].apply(lambda x: f"{x:.2f}%")
 
-    if "Task" not in df_results.columns:
-        df_results.insert(0, "Task", [
-            log_data[log]["Task"] for log in df_results.index
-            if "Task" in log_data[log]
-        ])
+        if "Task" not in df_results.columns:
+            df_results.insert(0, "Task", [
+                log_data[log]["Task"] for log in df_results.index
+                if "Task" in log_data[log]
+            ])
 
-    print("\n📊 Result of Evaluation:")
-    print(df_results[["Task", "refused_score", "rubric_score", "ASR(%)", "Explanation"]])
+        # 개별 평가 결과 즉시 저장
+        save_dir = f"./eval/results/{os.path.basename(log_folder.rstrip('/'))}/scores"
+        os.makedirs(save_dir, exist_ok=True)
 
-    save_dir = f"./eval/results/{os.path.basename(log_folder.rstrip('/'))}/scores"
-    os.makedirs(save_dir, exist_ok=True)
-
-    for log_name, ext in log_files.items():
         output_path = os.path.join(save_dir, f"{os.path.splitext(log_name)[0]}_eval.json")
-       
         data_to_save = {
-        "evaluation_results": evaluation_results[log_name],
-        "assistant_last_response_text": log_data[log_name]["assistant_last_response_text"],
-        "assistant_last_response_images": log_data[log_name]["assistant_last_response_images"]
+            "evaluation_results": evaluation_results[log_name],
+            "assistant_last_response_text": log_data[log_name]["assistant_last_response_text"],
+            "assistant_last_response_images": log_data[log_name]["assistant_last_response_images"]
         }
-       
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(data_to_save, f, ensure_ascii=False, indent=4)
-        print(f"[+] Evaluation results saved at:  {output_path}")
+        # 상태(progress) 파일 업데이트
+        save_progress(progress_file, identifier)
+        time.sleep(4)
+
+    # print(f"[+] Evaluation results saved at:  {output_path}")
+    # print("\n📊 Result of Evaluation:")
+    # print(df_results[["Task", "refused_score", "rubric_score", "ASR(%)", "Explanation"]])
+
+    # save_dir = f"./eval/results/{os.path.basename(log_folder.rstrip('/'))}/scores"
+    # os.makedirs(save_dir, exist_ok=True)
+
+    # for log_name, ext in log_files.items():
+    #     output_path = os.path.join(save_dir, f"{os.path.splitext(log_name)[0]}_eval.json")
+       
+    #     data_to_save = {
+    #     "evaluation_results": evaluation_results[log_name],
+    #     "assistant_last_response_text": log_data[log_name]["assistant_last_response_text"],
+    #     "assistant_last_response_images": log_data[log_name]["assistant_last_response_images"]
+    #     }
+       
+    #     with open(output_path, "w", encoding="utf-8") as f:
+    #         json.dump(data_to_save, f, ensure_ascii=False, indent=4)
+    #     print(f"[+] Evaluation results saved at:  {output_path}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
