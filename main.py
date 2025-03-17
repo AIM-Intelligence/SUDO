@@ -191,8 +191,7 @@ def get_next_dynamic_name(model_name: str) -> str:
     만약 해당 형태의 파일이 없다면 n=1을 사용한다.
     """
     dir_path = "./attack/result"
-
-    pattern = re.compile(rf"^{re.escape(model_name)}_dynamic-r\((\d+)\)\.csv$")
+    pattern = re.compile(rf"^{re.escape(model_name)}_dynamic-r(\d+)\.csv$")
 
     max_n = 0
     for filename in os.listdir(dir_path):
@@ -201,11 +200,10 @@ def get_next_dynamic_name(model_name: str) -> str:
             current_n = int(match.group(1))
             if current_n > max_n:
                 max_n = current_n
-
     if max_n == 0:
-        return f"{model_name}_dynamic-r1.csv"
+        return f"{model_name}_dynamic-r1"
     else:
-        return f"{model_name}_dynamic-r{max_n + 1}.csv"
+        return f"{model_name}_dynamic-r{max_n + 1}"
 
 def run_dynamic_attack(attack_name):
     """
@@ -218,6 +216,7 @@ def run_dynamic_attack(attack_name):
 
     csv_file_path =  f"./attack/result/{attack_name}.csv"
     model_name = "_".join(attack_name.split("_")[:-1])
+
     current_attack_name = get_next_dynamic_name(model_name)
     output_csv_path = f"./attack/result/{current_attack_name}.csv"
     
