@@ -200,7 +200,6 @@ def main(log_folder):
     progress = load_progress(progress_file)
     last_processed_identifier = progress.get("last_processed_identifier", None)
     resume_from_next = last_processed_identifier is None
-
     
     log_data = {}
     for log_name, file_path in log_files.items():
@@ -219,8 +218,19 @@ def main(log_folder):
 
     evaluation_results = {}
 
-    for log_name, data in tqdm(log_data.items(), desc="Evaluating Logs", unit="log"):
-        identifier = log_data[log_name]["Identifier"]
+    # (2) CSV 순서대로 log_data를 순회하기 위한 준비
+    csv_identifier_list = df_rubrics['identifier'].astype(str).tolist()  # CSV에 있는 identifier 순서
+    ordered_log_names = []
+
+    for ident in csv_identifier_list:
+        for ln, d in log_data.items():
+            # log_data 중에서 CSV의 identifier와 일치하는 항목만 순서대로 모읍니다
+            if str(d['Identifier']) == ident:
+                ordered_log_names.append(ln)
+
+    for log_name in tqdm(ordered_log_names, desc="Evaluating Logs", unit="log"):
+        data = log_data[log_name]
+        identifier = data["Identifier"]
         if not resume_from_next:
             if identifier == last_processed_identifier:
                 resume_from_next = True
@@ -265,25 +275,9 @@ def main(log_folder):
         save_progress(progress_file, identifier)
         time.sleep(4)
 
-    # print(f"[+] Evaluation results saved at:  {output_path}")
+    print(f"[+] Evaluation results saved at:  {output_path}")
     # print("\n📊 Result of Evaluation:")
     # print(df_results[["Task", "refused_score", "rubric_score", "ASR(%)", "Explanation"]])
-
-    # save_dir = f"./eval/results/{os.path.basename(log_folder.rstrip('/'))}/scores"
-    # os.makedirs(save_dir, exist_ok=True)
-
-    # for log_name, ext in log_files.items():
-    #     output_path = os.path.join(save_dir, f"{os.path.splitext(log_name)[0]}_eval.json")
-       
-    #     data_to_save = {
-    #     "evaluation_results": evaluation_results[log_name],
-    #     "assistant_last_response_text": log_data[log_name]["assistant_last_response_text"],
-    #     "assistant_last_response_images": log_data[log_name]["assistant_last_response_images"]
-    #     }
-       
-    #     with open(output_path, "w", encoding="utf-8") as f:
-    #         json.dump(data_to_save, f, ensure_ascii=False, indent=4)
-    #     print(f"[+] Evaluation results saved at:  {output_path}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
