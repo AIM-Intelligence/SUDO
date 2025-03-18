@@ -86,11 +86,10 @@ def copy_all_files(src_folder, dest_folder, extension=".json"):
 def get_attack_response_path(attack_name: str) -> str:
     if "static" in attack_name:
         return "static_response"
-    match = re.search(r"dynamic-(\d+)", attack_name)
+    match = re.search(r"dynamic-r(\d+)", attack_name)
     if match:
         dynamic_num = match.group(1)  # 숫자 부분 추출
         return f"dynamic_response_round_{dynamic_num}"
-    
     return "unknown_attack_type"
 def run_attack_generation(attack_name):
     """
