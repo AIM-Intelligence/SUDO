@@ -144,35 +144,35 @@ def build_file_mapping(json_folder):
 # - dynamic() 호출 -> CSV에 저장
 ##############################################################################
 
-def main(csv_file_path, output_csv_path, json_folder):
+def main(csv_file_path, output_csv_path, json_folder, based_dynamic_num):
+    based_tactic = "static_response"
+    if based_dynamic_num > 0:
+        based_tactic = f"dynamic_response_round_{based_dynamic_num}"
+    current_tactic = f"dynamic_response_round_{based_dynamic_num+1}"
     # 1) 빌드 맵핑
     file_mapping = build_file_mapping(json_folder) #평가 결과
-
     # 2) CSV 불러오기
     df = pd.read_csv(csv_file_path)
-
+    if current_tactic not in df.columns:
+            df[current_tactic] = ""  # 빈 값으로 초기화
     # 3) 각 row 순회
     for index, row in tqdm(df.iterrows(), total=len(df), desc="Generating Dynamic Attack", unit="index"):
-        instructions = row.get("static", "")
+        instructions = row.get(based_tactic, "")
         identifier = row.get("identifier", "").strip()
 
-        # print(f"Processing row with identifier {identifier} and static attack: {instructions}")
         json_file_path = file_mapping.get(identifier)
         if json_file_path:
-            # print(f"Processing row with identifier '{identifier}' using file '{json_file_path}'")
             try:
-                result = dynamic(instructions, json_file_path)
+                result = dynamic(instructions, json_file_path)  
             except Exception as e:
                 result = f"Error: {e}"
-            # CSV에 결과 저장
-            df.loc[index, "dynamic_response_round_1"] = result
+
+            df.loc[index, current_tactic] = result
             df.to_csv(output_csv_path, index=False)
-            # print("Dynamic Response:")
-            # print(result)
+
         else:
             print(f"No JSON file found for identifier: {identifier}")
 
-    # 마지막에 최종 저장
     df.to_csv(output_csv_path, index=False)
     print(f"\nAll done. Final CSV saved to {output_csv_path}")
 
@@ -181,14 +181,14 @@ def main(csv_file_path, output_csv_path, json_folder):
 ##############################################################################
 
 if __name__ == "__main__":
-    # 예시: python dynamic_eval.py /content/gpto1_dynamic_1.csv /content/gpto1_dynamic_1_out.csv /content/static_file
-    if len(sys.argv) < 4:
-        print(f"Usage: python {sys.argv[0]} <csv_file_path> <output_csv_path> <eval result>")
+    if len(sys.argv) < 5:
+        print(f"Usage: python {sys.argv[0]} <csv_file_path> <output_csv_path> <eval result> <based dynamic num>")
         sys.exit(1)
 
-    csv_file_path   = sys.argv[1]
-    output_csv_path = sys.argv[2]
-    json_folder     = sys.argv[3]
+    csv_file_path     = sys.argv[1]
+    output_csv_path   = sys.argv[2]
+    json_folder       = sys.argv[3]
+    based_dynamic_num = int(sys.argv[4])
 
     # 실행
-    main(csv_file_path, output_csv_path, json_folder)
+    main(csv_file_path, output_csv_path, json_folder, based_dynamic_num)

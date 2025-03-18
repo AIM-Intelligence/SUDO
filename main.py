@@ -85,12 +85,13 @@ def copy_all_files(src_folder, dest_folder, extension=".json"):
 
 def get_attack_response_path(attack_name: str) -> str:
     if "static" in attack_name:
-        return "attack_result_new"
-    elif "dynamic" in attack_name:
-        return "dynamic_response_round_1"
-    else:
-        return "unknown_attack_type"
-
+        return "static_response"
+    match = re.search(r"dynamic-(\d+)", attack_name)
+    if match:
+        dynamic_num = match.group(1)  # 숫자 부분 추출
+        return f"dynamic_response_round_{dynamic_num}"
+    
+    return "unknown_attack_type"
 def run_attack_generation(attack_name):
     """
     1) 공격 JSON 생성 (Scene Change Task 삽입 포함)
@@ -201,9 +202,9 @@ def get_next_dynamic_name(model_name: str) -> str:
             if current_n > max_n:
                 max_n = current_n
     if max_n == 0:
-        return f"{model_name}_dynamic-r1"
+        return max_n, f"{model_name}_dynamic-r1"
     else:
-        return f"{model_name}_dynamic-r{max_n + 1}"
+        return max_n, f"{model_name}_dynamic-r{max_n + 1}"
 
 def run_dynamic_attack(attack_name):
     """
@@ -217,11 +218,11 @@ def run_dynamic_attack(attack_name):
     csv_file_path =  f"./attack/result/{attack_name}.csv"
     model_name = "_".join(attack_name.split("_")[:-1])
 
-    current_attack_name = get_next_dynamic_name(model_name)
+    dynamic_num, current_attack_name = get_next_dynamic_name(model_name)
     output_csv_path = f"./attack/result/{current_attack_name}.csv"
     
     print("[+] Dynamic Attack 생성 중...")
-    subprocess.run(["python3", DYNAMIC_ATTACK_SCRIPT,csv_file_path, output_csv_path, feedback_folder], check=True)
+    subprocess.run(["python3", DYNAMIC_ATTACK_SCRIPT,csv_file_path, output_csv_path, feedback_folder, str(int(dynamic_num))], check=True)
 
 def main():
     parser = argparse.ArgumentParser(description="Main Controller for Attack / Docker / Evaluation / Dynamic")
@@ -243,7 +244,7 @@ def main():
         run_formatter(args.formatter[0])
 
     if args.docker_run:
-            run_docker_run()
+        run_docker_run()
 
     if args.attack:
         run_attack(args.formatter[0])

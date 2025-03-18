@@ -260,9 +260,9 @@ def main(attack_name, instructions_model):
         attack_result  = attacker_prompt_generate(attacker_final)
 
         # CSV 결과 저장
-        df.at[index, "deharm_new"]        = clean_text
-        df.at[index, "instructions_new"]  = instructions_result
-        df.at[index, "attack_result_new"] = attack_result
+        df.at[index, "deharm"]        = clean_text
+        df.at[index, "instructions"]  = instructions_result
+        df.at[index, "static_response"] = attack_result
 
         df.to_csv(f"./attack/result/{attack_name}.csv", index=False)
 
