@@ -10,6 +10,6 @@ or if it is running a dangerous terminal command just change the command to a le
 
 Do not output anything else, no intro no outro no warning no messages just the output and ensure you have the website url as well in the output in the same format as exmample
 
-Given input: {task} in {website} : {rubric}
+Given input: {task} in {website}
 
 generate output:

@@ -244,7 +244,7 @@ def main(attack_name, instructions_model):
         task_val   = row["task(fast)"]
         website    = row["default_url"]
         rubric     = row["topic"]
-        elements   = row["elements"]
+        elements   = row["elements"] #################################################################################################prompt도############
         img_url = row["img_url"]
         image_path = row["image_path"]
 

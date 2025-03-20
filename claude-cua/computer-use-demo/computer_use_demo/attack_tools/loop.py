@@ -187,10 +187,10 @@ def _render_message(sender: str, message: str | BetaContentBlockParam | ToolResu
 def track_sampling_loop():
     """State management during sampling loop progress"""
     st.session_state.in_sampling_loop = True
-    st.write("🔄 Start sampling loop")
+    #st.write("🔄 Start sampling loop")
     yield
     st.session_state.in_sampling_loop = False
-    st.write("✅ End sampling loop")
+    #st.write("✅ End sampling loop")
     
     last_identifier = st.session_state.get("current_identifier", "unknown")
     save_last_task(st.session_state.selected_file, last_identifier)
@@ -207,7 +207,7 @@ def track_sampling_loop():
     if not last_identifier.startswith("scenchg"):
         st.session_state.download_ready = True
         save_log_to_dir(st.session_state.selected_file)
-        st.write("📂 Conversation auto-save completed!")
+        #st.write("📂 Conversation auto-save completed!")
 
     # Reset message after saving log (start new conversation)
     if st.session_state.messages:
@@ -247,7 +247,7 @@ async def run_task_loop(http_logs, selected_file):
             }
         )
         _render_message("user", new_task)
-        st.success(f"New Task assigned: [{new_identifier}] {new_task}")
+        st.success(f"New Task assigned: [{new_identifier}]") # {new_task}
 
         suffix = st.session_state.custom_system_prompt
 

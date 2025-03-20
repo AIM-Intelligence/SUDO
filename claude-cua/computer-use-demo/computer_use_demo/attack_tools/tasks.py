@@ -48,7 +48,7 @@ def save_last_task(selected_file, identifier):
         with open(last_task_path, "w", encoding="utf-8") as file:
             json.dump({"last_identifier": next_identifier}, file, indent=4, ensure_ascii=False)
 
-        st.write(f"✅ 실행된 identifier 저장 완료: {next_identifier}")
+        #st.write(f"✅ 실행된 identifier 저장 완료: {next_identifier}")
 
     except Exception as e:
         st.error(f"❌ 마지막 실행 기록 저장 실패: {e}")
@@ -105,21 +105,21 @@ def get_next_task(selected_file):
             for idx, task in enumerate(st.session_state.tasks):
                 if task["identifier"] == last_identifier:
                     st.session_state.task_index = idx # 1
-                    st.success(f"🔄 이전 실행된 task({last_identifier})를 확인했습니다. 이어서 실행합니다.")
+                    #st.success(f"🔄 이전 실행된 task({last_identifier})를 확인했습니다. 이어서 실행합니다.")
                     found = True
                     break
             if not found:
-                st.warning(f"⚠️ 저장된 identifier({last_identifier})가 목록에 없습니다. 처음부터 실행합니다.")
+                #st.warning(f"⚠️ 저장된 identifier({last_identifier})가 목록에 없습니다. 처음부터 실행합니다.")
                 st.session_state.task_index = 0  # identifier가 목록에 없으면 처음부터 실행
                 
     if st.session_state.task_index < len(st.session_state.tasks):
         next_task_data = st.session_state.tasks[st.session_state.task_index]
 
         if isinstance(next_task_data, dict) and "identifier" in next_task_data and "task" in next_task_data:
-            st.write(f"🔼 task_index 증가됨: {st.session_state.task_index}")
+            #st.write(f"🔼 task_index 증가됨: {st.session_state.task_index}")
             return next_task_data["identifier"], next_task_data["task"]
         else:
-            st.error(f"❌ 잘못된 Task 데이터: {next_task_data}")
+            #st.error(f"❌ 잘못된 Task 데이터: {next_task_data}")
             return None, None
     else:
         return None, None

@@ -52,7 +52,7 @@ def download_chat_logs(selected_file):
     st.session_state.saved_file_content = io.BytesIO(json_bytes)
     st.session_state.saved_file_name = f"{selected_file}_{timestamp}_{last_identifier}.json"
     st.write("✅ Log saved completed:", st.session_state.saved_file_name)
-    st.write("📄 Stored data length:", len(json_bytes))
+    #st.write("📄 Stored data length:", len(json_bytes))
     return True
 
 def trigger_auto_download():
@@ -106,7 +106,7 @@ def trigger_auto_download():
     """
 
     components.html(components_code, height=0)
-    st.write("🚀 Automatic download trigger execution complete!")
+    #st.write("🚀 Automatic download trigger execution complete!")
 
 def save_log_to_dir(selected_file):
     """로그를 log 디렉토리에 저장하는 함수"""
@@ -161,7 +161,7 @@ def save_log_to_dir(selected_file):
             st.session_state.saved_file_name = log_file_path
             st.session_state.saved_file_content = io.BytesIO(json_bytes)
             st.write(f"✅ Log successfully saved: {log_file_path}")
-            st.write(f"📄 File size: {os.stat(log_file_path).st_size} bytes")
+            #st.write(f"📄 File size: {os.stat(log_file_path).st_size} bytes")
         else:
             st.error("❌ Log file was created but is empty. Please check the writing process.")
 
