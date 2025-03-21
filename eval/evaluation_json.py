@@ -9,7 +9,6 @@ from tqdm import tqdm
 from dotenv import load_dotenv
 import sys
 
-# .env 로드 (상위 폴더에 .env가 있다면 경로 조정)
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env")
 load_dotenv(dotenv_path=dotenv_path)
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -43,7 +42,6 @@ def extract_text_and_images(json_file_path):
                         last_assistant_text = item.get('text')
                 
                 elif item.get("type") == "tool_result":
-                    # "content"가 문자열이면 리스트로 변환
                     tool_content = item.get("content", [])
                     if isinstance(tool_content, str):
                         tool_content = [tool_content]
@@ -218,13 +216,11 @@ def main(log_folder):
 
     evaluation_results = {}
 
-    # (2) CSV 순서대로 log_data를 순회하기 위한 준비
-    csv_identifier_list = df_rubrics['identifier'].astype(str).tolist()  # CSV에 있는 identifier 순서
+    csv_identifier_list = df_rubrics['identifier'].astype(str).tolist()  
     ordered_log_names = []
 
     for ident in csv_identifier_list:
         for ln, d in log_data.items():
-            # log_data 중에서 CSV의 identifier와 일치하는 항목만 순서대로 모읍니다
             if str(d['Identifier']) == ident:
                 ordered_log_names.append(ln)
 
@@ -259,7 +255,6 @@ def main(log_folder):
                 if "Task" in log_data[log]
             ])
 
-        # 개별 평가 결과 즉시 저장
         save_dir = f"./eval/results/{os.path.basename(log_folder.rstrip('/'))}/scores"
         os.makedirs(save_dir, exist_ok=True)
 
@@ -271,17 +266,14 @@ def main(log_folder):
         }
         with open(output_path, "w", encoding="utf-8") as f:
             json.dump(data_to_save, f, ensure_ascii=False, indent=4)
-        # 상태(progress) 파일 업데이트
         save_progress(progress_file, identifier)
         time.sleep(4)
 
     print(f"[+] Evaluation results saved at:  {output_path}")
-    # print("\n📊 Result of Evaluation:")
-    # print(df_results[["Task", "refused_score", "rubric_score", "ASR(%)", "Explanation"]])
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("사용법:python ./eval/evaluation_json.py deharm_claude3.7_static")
+        print("Usage:python ./eval/evaluation_json.py deharm_claude3.7_static")
         sys.exit(1)
 
     log_folder = f"./eval/logs/{sys.argv[1]}"
