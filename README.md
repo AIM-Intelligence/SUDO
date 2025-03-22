@@ -14,9 +14,10 @@ This repository is a system that manages automatic attack generation, evaluation
 5. [Detailed Workflow](#detailed-workflow)  
 6. [Notes](#notes)  
 
----
 
 ## Overview
+---
+![Demo Video](./demo_video.gif)
 
 - **Attack Generation**:  
 Detox2tox (Static) is a pipeline that transforms a malicious instruction into a detoxed task to avoid safety guardrails, obtains a plan from a well-aligned model, and then reintroduces the malicious details at the final step—preserving the original harmful goal while stealthily bypassing these defenses.
@@ -30,7 +31,7 @@ Detox2tox (Static) is a pipeline that transforms a malicious instruction into a 
   Performs numeric calculations and evaluations.
 
 - **Dynamic Attack**:  
-  Generates additional **Dynamic Attacks** based on evaluation results.
+  **Dynamic attack** is an iterative process in which new or modified prompts are generated based on evaluation results. By leveraging feedback from evaluators, SUDO refines the prompt or strengthens hidden triggers to evolve the attack strategy. This approach enables the attack to adapt to changing conditions or defenses, improving its success rate over multiple iterations.
 
 All steps are automated using a single script: **`main.py`**.
 
@@ -40,25 +41,25 @@ All steps are automated using a single script: **`main.py`**.
 
 ```plaintext
 sudo
-├── main.py                # Main script managing the entire pipeline
+├── main.py                   # Main script managing the entire pipeline
 ├── attack
 │   ├── attack_generation.py
-│   └── result.json        # Attack result logs generated after Docker execution
+│   └── result.json           # Attack result logs generated after Docker execution
 ├── Benchmark
 │   ├── SUDO_dataset.csv
-│   └── fill_placeholders.py#Fill extra_info's placeholders for task, starting_environment, topic, expected
+│   └── fill_placeholders.py  #Fill extra_info's placeholders for task, starting_environment, topic, expected
 ├── claude-cua
 │   └── computer-use-demo
 │       └── computer_use_demo
-│           ├── attack_tools# Handles automatic attacking and logging
-│           ├── data       # Folder where attack JSON files are moved
-│           └── log        # Logs generated within Docker
+│           ├── attack_tools  # Handles automatic attacking and logging
+│           ├── data          # Folder where attack JSON files are moved
+│           └── log           # Logs generated within Docker
 ├── eval
-│   ├── evaluation_json.py # Evaluation logic (log files → extract scores)
-│   ├── calculate_score.py # Evaluation logic (scores → numeric calculations)
-│   └── logs               # Final storage of attack logs (for evaluation)
+│   ├── evaluation_json.py    # Evaluation logic (log files → extract scores)
+│   ├── calculate_score.py    # Evaluation logic (scores → numeric calculations)
+│   └── logs                  # Final storage of attack logs (for evaluation)
 ├── dynamic_attack
-│   └── dynamic_attack.py  # Handles dynamic attack generation
+│   └── dynamic_attack.py     # Handles dynamic attack generation
 ├── formatter
 │   ├── auto-scene
 │   └── csv2json
