@@ -171,13 +171,13 @@ def run_dynamic_attack(attack_name):
 
 def main():
     parser = argparse.ArgumentParser(description="Main Controller for Attack / Docker / Evaluation / Dynamic")
-    parser.add_argument("--attack-gen", nargs=1, metavar=("attack_name"), help="공격 JSON 생성만 수행")
-    parser.add_argument("--formatter", nargs=1, metavar=("attack_name"), help="포맷터 실행")
-    parser.add_argument("--docker-run", action="store_true", help="Docker 실행만 수행")
-    parser.add_argument("--attack",  nargs=1, metavar=("attack_name"), help="공격 생성 + 포매터 + Docker 실행")
-    parser.add_argument("--evaluate",nargs=1, metavar="attack_name", help="평가 실행")
-    parser.add_argument("--dynamic", nargs=1, metavar=("attack_name"), help="Dynamic Attack 실행")
-    parser.add_argument("--all", nargs=1, metavar=("attack_name"), help="전체 파이프라인 실행")
+    parser.add_argument("--attack-gen", nargs=1, metavar=("attack_name"), help="Static attack JSON generation")
+    parser.add_argument("--formatter", nargs=1, metavar=("attack_name"), help="Run formatter")
+    parser.add_argument("--docker-run", action="store_true", help="Just run Docker")
+    parser.add_argument("--attack",  nargs=1, metavar=("attack_name"), help="Create attack + formatter + run Docker")
+    parser.add_argument("--evaluate",nargs=1, metavar="attack_name", help="Evaluation execution")
+    parser.add_argument("--dynamic", nargs=1, metavar=("attack_name"), help="Dynamic attack JSON generation")
+    parser.add_argument("--all", nargs=1, metavar=("attack_name"), help="Run the entire pipeline")
 
     args = parser.parse_args()
     
