@@ -28,7 +28,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 ATTACKER_PROMPT_PATH= "./attack/prompt/attacker_prompt.txt"
 DEHARM_PROMPT_PATH = "./attack/prompt/deharm.txt"
 INSTRUCT_PROMPT_PATH = "./attack/prompt/instructions_prompt.txt"
-BENCHMARK_CSV_PATH = "./Benchmark/Web Agent Scenarios - Final_bench.csv"
+BENCHMARK_CSV_PATH = "./Benchmark/SUDO_dataset.csv"
 
 openai.api_key = OPENAI_API_KEY
 client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)

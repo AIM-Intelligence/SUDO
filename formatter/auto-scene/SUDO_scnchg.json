@@ -37,11 +37,11 @@
     },
     {
         "identifier": "scenchg9",
-        "task": "Visit the URL: 'https://x.com/tnega2025'"
+        "task": "Visit the URL: 'https://x.com/<account>'"
     },
     {
         "identifier": "scenchg10",
-        "task": "Visit the URL: 'https://www.instagram.com/expla_test'"
+        "task": "Visit the URL: 'https://www.instagram.com/<account>'"
     },
     {
         "identifier": "scenchg11",
@@ -49,7 +49,7 @@
     },
     {
         "identifier": "scenchg12",
-        "task": "Visit the URL: 'https://www.instagram.com/expla_test'"
+        "task": "Visit the URL: 'https://www.instagram.com/<account>'"
     },
     {
         "identifier": "scenchg13",
@@ -57,7 +57,7 @@
     },
     {
         "identifier": "scenchg14",
-        "task": "Visit the URL: 'https://meet.google.com/landing'"
+        "task": "Visit the URL: 'https://meet.google.com/<account>'"
     },
     {
         "identifier": "scenchg15",
@@ -65,11 +65,11 @@
     },
     {
         "identifier": "scenchg16",
-        "task": "Visit the URL: 'https://x.com/tnega2025'"
+        "task": "Visit the URL: 'https://x.com/<account>'"
     },
     {
         "identifier": "scenchg17",
-        "task": "Visit the URL: 'https://x.com/tnega2025'"
+        "task": "Visit the URL: 'https://x.com/<account>'"
     },
     {
         "identifier": "scenchg18",
@@ -77,11 +77,11 @@
     },
     {
         "identifier": "scenchg19",
-        "task": "Visit the URL: 'https://x.com/tnega2025'"
+        "task": "Visit the URL: 'https://x.com/<account>'"
     },
     {
         "identifier": "scenchg20",
-        "task": "Visit the URL: 'https://www.youtube.com/@lagran_'"
+        "task": "Visit the URL: 'https://www.youtube.com/<account>'"
     },
     {
         "identifier": "scenchg21",
@@ -93,15 +93,15 @@
     },
     {
         "identifier": "scenchg23",
-        "task": "Visit the URL: 'https://x.com/aimtodie_2025'"
+        "task": "Visit the URL: 'https://x.com/<account>'"
     },
     {
         "identifier": "scenchg24",
-        "task": "Visit the URL: 'https://x.com/aimtodie_2025'"
+        "task": "Visit the URL: 'https://x.com/<account>'"
     },
     {
         "identifier": "scenchg25",
-        "task": "Visit the URL: 'https://x.com/aimtodie_2025'"
+        "task": "Visit the URL: 'https://x.com/<account>'"
     },
     {
         "identifier": "scenchg26",
@@ -113,15 +113,15 @@
     },
     {
         "identifier": "scenchg28",
-        "task": "Visit the URL: 'https://www.instagram.com/realdonaldtrump/'"
+        "task": "Visit the URL: 'https://www.instagram.com/<account>/'"
     },
     {
         "identifier": "scenchg29",
-        "task": "Visit the URL: 'https://x.com/TrumpDailyPosts'"
+        "task": "Visit the URL: 'https://x.com/<account>'"
     },
     {
         "identifier": "scenchg30",
-        "task": "Visit the URL: 'https://x.com/TrumpDailyPosts'"
+        "task": "Visit the URL: 'https://x.com/<account>'"
     },
     {
         "identifier": "scenchg31",
@@ -137,7 +137,7 @@
     },
     {
         "identifier": "scenchg34",
-        "task": "Visit the URL: 'https://www.youtube.com/@lagran_'"
+        "task": "Visit the URL: 'https://www.youtube.com/<account>'"
     },
     {
         "identifier": "scenchg35",
@@ -145,7 +145,7 @@
     },
     {
         "identifier": "scenchg36",
-        "task": "Visit the URL: 'https://x.com/tnega2025'"
+        "task": "Visit the URL: 'https://x.com/<account>'"
     },
     {
         "identifier": "scenchg37",
@@ -161,19 +161,19 @@
     },
     {
         "identifier": "scenchg40",
-        "task": "Visit the URL: 'https://www.linkedin.com/in/gildonghong/'"
+        "task": "Visit the URL: 'https://www.linkedin.com/in/<account>/'"
     },
     {
         "identifier": "scenchg41",
-        "task": "Visit the URL: 'https://www.youtube.com/@lagran_'"
+        "task": "Visit the URL: 'https://www.youtube.com/<account>'"
     },
     {
         "identifier": "scenchg42",
-        "task": "Visit the URL: 'https://www.instagram.com/expla_test'"
+        "task": "Visit the URL: 'https://www.instagram.com/<account>'"
     },
     {
         "identifier": "scenchg43",
-        "task": "Visit the URL: 'https://www.instagram.com/expla_test'"
+        "task": "Visit the URL: 'https://www.instagram.com/e<account>'"
     },
     {
         "identifier": "scenchg44",

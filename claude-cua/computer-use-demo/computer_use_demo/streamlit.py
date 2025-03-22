@@ -17,12 +17,7 @@ from anthropic.types.beta import (
     BetaTextBlockParam,
     BetaToolResultBlockParam,
 )
-# import streamlit.components.v1 as components
-# from pathlib import PosixPath
 
-# -- attack_tools 내부 모듈 임포트 --
-
-# 1) loop.py
 from computer_use_demo.attack_tools.loop import (
     run_task_loop,
     sampling_loop,
@@ -34,7 +29,6 @@ from computer_use_demo.attack_tools.loop import (
     maybe_add_interruption_blocks,
 )
 
-# 2) state.py
 from computer_use_demo.attack_tools.state import (
     setup_state,
     _reset_model,
@@ -42,7 +36,6 @@ from computer_use_demo.attack_tools.state import (
     save_to_storage,
 )
 
-# 3) tasks.py
 from computer_use_demo.attack_tools.tasks import (
     get_json_files,
     save_last_task,
@@ -50,25 +43,21 @@ from computer_use_demo.attack_tools.tasks import (
     load_tasks_from_json,
 )
 
-# 4) logs.py
 from computer_use_demo.attack_tools.logs import (
     download_chat_logs,
     trigger_auto_download,
     save_log_to_dir,
 )
 
-# 5) screenshot.py
 from computer_use_demo.attack_tools.screenshot import capture_screenshot
 
 
-# -- Provider & Tools (import 그대로)
 from computer_use_demo.loop import (
     PROVIDER_TO_DEFAULT_MODEL_NAME,
     APIProvider,
 )
 from computer_use_demo.tools import ToolResult
 
-# -- 그대로 존재하는 전역 상수들 --
 STREAMLIT_STYLE = """
 <style>
     /* Highlight the stop button in red */
@@ -112,12 +101,12 @@ async def main():
     st.markdown(STREAMLIT_STYLE, unsafe_allow_html=True)
     st.title("Automatic Attack Manager")
 
-    setup_state()  # 세션 초기화
+    setup_state()  
 
     if not os.getenv("HIDE_WARNING", False):
         st.warning(WARNING_TEXT)
 
-    json_files = get_json_files()  # data 폴더의 JSON 목록
+    json_files = get_json_files() 
     if not json_files:
         st.error("⚠️ No JSON files found in data folder.")
         return
@@ -168,11 +157,11 @@ async def main():
             with st.spinner("Resetting..."):
                 st.session_state.clear()
                 setup_state()
-                subprocess.run("pkill Xvfb; pkill tint2", shell=True)  # noqa: ASYNC221
+                subprocess.run("pkill Xvfb; pkill tint2", shell=True)  
                 await asyncio.sleep(1)
-                subprocess.run("./start_all.sh", shell=True)  # noqa: ASYNC221
+                subprocess.run("./start_all.sh", shell=True) 
 
-    # 인증 체크
+
     if not st.session_state.auth_validated:
         if auth_error := validate_auth(st.session_state.provider, st.session_state.api_key):
             st.warning(f"Please resolve the following auth issue:\n\n{auth_error}")
@@ -195,7 +184,6 @@ async def main():
 
     new_message = st.chat_input("Type a message to send to Claude to control the computer...")
     with chat:
-        # render past chats
         for message in st.session_state.messages:
             if isinstance(message["content"], str):
                 _render_message(message["role"], message["content"])
@@ -212,7 +200,6 @@ async def main():
                             cast(BetaContentBlockParam | ToolResult, block),
                         )
 
-        # render past http exchanges
         responses_copy = list(st.session_state.responses.items())
         for identity, (request, response) in responses_copy:
             _api_response_callback(
@@ -223,7 +210,6 @@ async def main():
                 response_state=st.session_state.responses
             )
 
-        # render new user input
         if new_message:
             st.session_state.messages.append(
                 {
@@ -236,7 +222,6 @@ async def main():
             )
             _render_message("user", new_message)
 
-        # check last message role
         try:
             most_recent_message = st.session_state["messages"][-1]
         except IndexError:

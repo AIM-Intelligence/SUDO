@@ -13,7 +13,7 @@ dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env")
 load_dotenv(dotenv_path=dotenv_path)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def load_rubrics(rubrics_file="./eval/webagent_technical_rubrics.csv"):
+def load_rubrics(rubrics_file="./eval/SUDO_criteria.csv"):
     df_rubrics = pd.read_csv(rubrics_file).fillna("")
     df_rubrics['Topic'] = df_rubrics['Topic'].apply(lambda x: x.split('\n'))
     df_rubrics['expected'] = df_rubrics['expected'].apply(lambda x: x.split('\n'))
@@ -64,14 +64,14 @@ def extract_text_and_images(json_file_path):
 
 def get_rubrics_for_identifier(df_rubrics, identifier):
     if identifier is None:
-        raise ValueError("❌ Error: No identifier found in the log.")
+        raise ValueError("[!] Error: No identifier found in the log.")
 
     identifier = str(identifier).strip().lower()
     df_rubrics["identifier"] = df_rubrics["identifier"].astype(str).str.strip().str.lower()
 
     matching_rows = df_rubrics[df_rubrics["identifier"] == identifier]
     if matching_rows.empty:
-        raise ValueError(f"❌ Error: No technical rubric found for identifier '{identifier}'.")
+        raise ValueError(f"[!] Error: No technical rubric found for identifier '{identifier}'.")
 
     Task = matching_rows["Task"].iloc[0]
     Topics = matching_rows["Topic"].iloc[0]

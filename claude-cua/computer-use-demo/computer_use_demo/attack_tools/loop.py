@@ -8,8 +8,6 @@ import traceback
 
 from anthropic import RateLimitError
 
-# BetaContentBlockParam, BetaTextBlockParam, BetaToolResultBlockParam
-# 등도 그대로 import
 from anthropic.types.beta import (
     BetaContentBlockParam,
     BetaTextBlockParam,
@@ -20,27 +18,21 @@ from streamlit.delta_generator import DeltaGenerator
 from computer_use_demo.tools import ToolResult
 from typing import cast
 
-# 필요한 상수들
 INTERRUPT_TEXT = "(user stopped or interrupted and wrote the following)"
 INTERRUPT_TOOL_ERROR = "human stopped or interrupted tool execution"
 
-# -- 아래는 Provider/Model import (원본에서 가져옴) --
 from computer_use_demo.loop import (
     PROVIDER_TO_DEFAULT_MODEL_NAME,
     APIProvider,
-    sampling_loop,  # 이건 원 코드에서 이미 정의
+    sampling_loop,  
 )
 
-# -- run_task_loop 내부에서 get_next_task, maybe_add_interruption_blocks 등 참조 --
 from .tasks import get_next_task
 from .tasks import save_last_task
 
 from .logs import save_log_to_dir
 from .screenshot import capture_screenshot
 
-################################################################################
-# 그대로 옮긴 함수들 (validate_auth, maybe_add_interruption_blocks 등)
-################################################################################
 
 def validate_auth(provider: APIProvider, api_key: str | None):
     if provider == APIProvider.ANTHROPIC:
@@ -141,8 +133,7 @@ def _render_error(error: Exception):
         body += "\n\n**Traceback:**"
         lines = "\n".join(traceback.format_exception(error))
         body += f"\n\n```{lines}```"
-    # 원본 코드에서 save_to_storage(f"error_{datetime.now().timestamp()}.md", body), etc.
-    # import 필요
+
     from .state import save_to_storage
     save_to_storage(f"error_{datetime.now().timestamp()}.md", body)
     st.error(f"**{error.__class__.__name__}**\n\n{body}", icon=":material/error:")
@@ -179,9 +170,7 @@ def _render_message(sender: str, message: str | BetaContentBlockParam | ToolResu
         else:
             st.markdown(message)
 
-################################################################################
-# run_task_loop + track_sampling_loop
-################################################################################
+
 
 @contextmanager
 def track_sampling_loop():
@@ -195,7 +184,6 @@ def track_sampling_loop():
     last_identifier = st.session_state.get("current_identifier", "unknown")
     save_last_task(st.session_state.selected_file, last_identifier)
 
-    # 대화 로그 저장 way1 (바탕화면 저장)
     """
     success = download_chat_logs(st.session_state.selected_file)
     if success and not last_identifier.startswith("scenchg"):
@@ -203,18 +191,14 @@ def track_sampling_loop():
         st.write("📂 Conversation auto-save completed!")
         trigger_auto_download()
     """
-    # way2: 마운트 된 폴더에 저장
     if not last_identifier.startswith("scenchg"):
         st.session_state.download_ready = True
         save_log_to_dir(st.session_state.selected_file)
-        #st.write("📂 Conversation auto-save completed!")
 
-    # Reset message after saving log (start new conversation)
     if st.session_state.messages:
         st.session_state.messages = []
     st.session_state.log_saved = False
 
-    # harmGUI_scnchg.json 체크
     if st.session_state.selected_file == "harmGUI_scnchg.json":
         current_identifier = st.session_state.get("current_identifier", "unknown")
 
@@ -224,7 +208,6 @@ def track_sampling_loop():
         asyncio.create_task(run_capture())
 
 async def run_task_loop(http_logs, selected_file):
-    """Task를 반복해서 실행하는 루프 (중단된 위치부터 재시작)"""
     while True:
         if st.session_state.messages:
             st.session_state.messages = []
@@ -252,8 +235,6 @@ async def run_task_loop(http_logs, selected_file):
         suffix = st.session_state.custom_system_prompt
 
         with track_sampling_loop():
-            # 아래 sampling_loop는 computer_use_demo.loop 의 (동일 이름) 함수
-            # 여기서는 그대로 import해 사용
             st.session_state.messages = await sampling_loop(
                 system_prompt_suffix=suffix,
                 model=st.session_state.model,
@@ -268,4 +249,4 @@ async def run_task_loop(http_logs, selected_file):
                 only_n_most_recent_images=st.session_state.only_n_most_recent_images,
             )
 
-        await asyncio.sleep(7)  # 4초 대기 (너무 빠른 반복 방지)
+        await asyncio.sleep(7)  

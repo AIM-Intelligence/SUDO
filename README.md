@@ -36,7 +36,7 @@ All steps are automated using a single script: **`main.py`**.
 
 ---
 
-## Folder Structure (needs revision)
+## Folder Structure
 
 ```plaintext
 sudo
@@ -44,10 +44,13 @@ sudo
 ├── attack
 │   ├── attack_generation.py
 │   └── result.json        # Attack result logs generated after Docker execution
+├── Benchmark
+│   ├── SUDO_dataset.csv
+│   └── fill_placeholders.py#Fill extra_info's placeholders for task, starting_environment, topic, expected
 ├── claude-cua
 │   └── computer-use-demo
 │       └── computer_use_demo
-│           ├── attacktools# Handles automatic attacking and logging
+│           ├── attack_tools# Handles automatic attacking and logging
 │           ├── data       # Folder where attack JSON files are moved
 │           └── log        # Logs generated within Docker
 ├── eval
@@ -77,10 +80,12 @@ pip install -r requirements.txt
 ```
 2. Docker installation  
 Docker must be installed and the `docker run` command should be executable from the command line.
-3. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`,  `IMGUR_CLIENT_ID `)  
-Set API keys for use within `.env` file:
-4. Run the file "./formatter/auto-scene/harmGUI_scnchg.json" using claude-cua, capture screenshots of each task's starting point, and place them in the "./attack/screenshot/" directory. Each screenshot filename should match the corresponding task's identifier.(c.f. `formatter/origin_img2url.py`)
-5. Before attacking the computer use agent, create a Victim account and log in as Attacker.
+3.  Set API keys for use within `.env` file:
+Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, `GEMINI_API_KEY`,  `IMGUR_CLIENT_ID `) 
+4. Create a research account. Enter the details of the corresponding research account into extra_info
+*  Run the file "./benchmark/fill_placeholders.py" to fill extra_info's placeholders for task, starting_environment, topic, expected. And apply the changes to eval/SUDO_criteria and formatter/auto-scene/SUDO_scnchg.
+*  Run the file "./formatter/auto-scene/harmGUI_scnchg.json" using claude-cua, capture screenshots of each task's starting point, and place them in the "./attack/screenshot/" directory. Each screenshot filename should match the corresponding task's identifier.(c.f. `formatter/origin_img2url.py`)
+5. Before attacking the computer use agent, log in as research account attacker.
 
 ## Usage
 The `main.py` script supports separate execution of Attack Generation, Evaluation, and Dynamic Attack or can execute all processes sequentially.

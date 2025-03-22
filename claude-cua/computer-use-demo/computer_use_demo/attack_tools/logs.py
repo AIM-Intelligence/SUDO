@@ -4,15 +4,11 @@ import json
 import base64
 import streamlit as st
 from datetime import datetime
-    # Streamlit components.html 로 삽입이 필요.
-    # 원본 코드에서 import streamlit.components.v1 as components 를 주석했었음.
-    # 여기서 임시로:
 import streamlit.components.v1 as components
 
 LOG_DIR = "/home/computeruse/computer_use_demo/log"
 
 def download_chat_logs(selected_file):
-    """로그 저장 시 파일명 변경 (chat_log → JSON 파일명)"""
     if not st.session_state.messages:
         st.write("⚠️ No messages to save")
         return None
@@ -22,10 +18,8 @@ def download_chat_logs(selected_file):
         return None
     
     st.session_state.log_saved = True
-     # 가장 최근 identifier 가져오기 (없으면 "unknown")
     last_identifier = st.session_state.get("current_identifier", "unknown")
 
-    # 날짜만 포함된 timestamp 생성
     timestamp = datetime.now().strftime("%Y-%m-%d")
 
     processed_messages = []
@@ -34,25 +28,23 @@ def download_chat_logs(selected_file):
         role = msg.get("role", "unknown")
         content = msg.get("content", "")
 
-        # user 역할이지만 tool_result 타입을 포함한 경우 role을 assistant로 변경
         if role == "user" and isinstance(content, list):
             for item in content:
                 if item.get("type") == "tool_result":
                     role = "assistant"
-                    break  # 한 개만 있어도 변경하므로 빠르게 종료
+                    break  
 
         processed_messages.append({"role": role, "content": content})
 
     log_data = {
         "timestamp": timestamp,
-        "identifier": last_identifier,  # identifier 추가
+        "identifier": last_identifier,
         "messages": processed_messages,
     }
     json_bytes = json.dumps(log_data, indent=4, ensure_ascii=False).encode("utf-8")
     st.session_state.saved_file_content = io.BytesIO(json_bytes)
     st.session_state.saved_file_name = f"{selected_file}_{timestamp}_{last_identifier}.json"
     st.write("✅ Log saved completed:", st.session_state.saved_file_name)
-    #st.write("📄 Stored data length:", len(json_bytes))
     return True
 
 def trigger_auto_download():
@@ -66,8 +58,7 @@ def trigger_auto_download():
     b64_data = base64.b64encode(file_data).decode()
     file_name = st.session_state.saved_file_name
 
-    # JavaScript HTML 생성
-    # (원본 코드 주석/문자열 모두 그대로 유지)
+  
     components_code = f"""
     <!DOCTYPE html>
     <html lang="en">
@@ -79,7 +70,6 @@ def trigger_auto_download():
     </head>
     <body>
         <script>
-            // Base64 데이터를 Blob으로 변환
             const b64Data = "{b64_data}";
             const byteCharacters = atob(b64Data);
             const byteNumbers = new Array(byteCharacters.length);
@@ -89,7 +79,6 @@ def trigger_auto_download():
             const byteArray = new Uint8Array(byteNumbers);
             const blob = new Blob([byteArray], {{ type: "application/json" }});
 
-            // Blob URL 생성 및 다운로드
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -106,10 +95,8 @@ def trigger_auto_download():
     """
 
     components.html(components_code, height=0)
-    #st.write("🚀 Automatic download trigger execution complete!")
 
 def save_log_to_dir(selected_file):
-    """로그를 log 디렉토리에 저장하는 함수"""
     st.write("⚠️ save_log_to_dir")
     if not st.session_state.messages:
         st.write("⚠️ No messages to save")

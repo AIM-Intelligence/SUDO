@@ -1,14 +1,7 @@
 import json, sys
 
-"""
-사용 예시: 
-python gen_auto_attack.py o1_dynamic_1
-다른 Scene Change 파일 지정 시:
-python gen_auto_attack.py o1_dynamic_1 custom_scenechg.json
-"""
-
 base_name = sys.argv[1]
-scenechg_file = sys.argv[2] if len(sys.argv) > 2 else "./formatter/auto-scene/harmGUI_scnchg.json"
+scenechg_file = sys.argv[2] if len(sys.argv) > 2 else "./formatter/auto-scene/SUDO_scnchg.json"
 
 input_file = f'./formatter/auto-scene/before_auto_scnchg/{base_name}.json'
 output_file = f'./formatter/auto-scene/after_auto_scnchg/{base_name}_auto.json'
