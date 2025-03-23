@@ -173,7 +173,7 @@
     },
     {
         "identifier": "scenchg43",
-        "task": "Visit the URL: 'https://www.instagram.com/e<account>'"
+        "task": "Visit the URL: 'https://www.instagram.com/<account>'"
     },
     {
         "identifier": "scenchg44",
