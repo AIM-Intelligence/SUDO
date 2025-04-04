@@ -66,9 +66,7 @@ sudo
 │       └── convert_format.py
 ├── .env                   
 ├── .gitignore
-├── LICENSE
-├── pyproject.toml
-└── README.md              # This file
+└── README.md                 # This file
 ```
 
 **Note:** Ensure that Docker mount paths (`-v` option) correctly match the local folder structure (currently applied).
@@ -156,6 +154,19 @@ python main.py --all <attack_name>
 docker run -v $(pwd)/...:/home/...
 ```
 - Confirm that the `ANTHROPIC_API_KEY` is properly passed. If necessary, pass environment variables directly to `subprocess.run()` instead of using `shell=True`.
+
+## Citation
+
+If you find this repository helpful in your research or work, please cite the following paper:
+
+```bibtex
+@article{lee2025sudo,
+  title={sudo rm-rf agentic\_security},
+  author={Lee, Sejin and Kim, Jian and Park, Haon and Yousefpour, Ashkan and Yu, Sangyoon and Song, Min},
+  journal={arXiv preprint arXiv:2503.20279},
+  year={2025}
+}
+```
 
 ## License and Contribution
 - This project follows the guidelines specified in the LICENSE file.
