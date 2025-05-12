@@ -1,7 +1,8 @@
 # sudo rm -rf agentic_security
 
 ### 🎉 Excited to share that our paper "[sudo rm -rf agentic_security](https://arxiv.org/abs/2503.20279)" has been accepted to ACL 2025 (Industry Track)!
-
+### 📌 [Citation](#citation)
+---
 
 This repository is a system that manages automatic attack generation, evaluation, and dynamic attack creation for computer use agents in one place. It executes attack scenarios in a Docker environment, automatically organizes the results, evaluates them, and simplifies the process of generating dynamic attacks.
 
@@ -159,15 +160,20 @@ docker run -v $(pwd)/...:/home/...
 - Confirm that the `ANTHROPIC_API_KEY` is properly passed. If necessary, pass environment variables directly to `subprocess.run()` instead of using `shell=True`.
 
 ## Citation
-
 If you find this repository helpful in your research or work, please cite the following paper:
-
 ```bibtex
-@article{lee2025sudo,
-  title={sudo rm-rf agentic\_security},
-  author={Lee, Sejin and Kim, Jian and Park, Haon and Yousefpour, Ashkan and Yu, Sangyoon and Song, Min},
-  journal={arXiv preprint arXiv:2503.20279},
-  year={2025}
+@inproceedings{leeetal2025sudo,
+  title      = {sudo rm-rf agentic\_security},
+  author     = {Lee, Sejin$^{\ast}$ and Kim, Jian$^{\ast}$ and Park, Haon$^{\dagger}$
+                and Yousefpour, Ashkan and Yu, Sangyoon and Song, Min},
+  booktitle  = {Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Industry Track)},
+  year       = {2025},
+  month      = jul,
+  address    = {Vienna, Austria},
+  publisher  = {Association for Computational Linguistics},
+  pages      = {to appear},
+  url        = {https://arxiv.org/abs/2503.20279},
+  note       = {$\ast$ Equal contribution, co-first authors. $\dagger$ Second author.}
 }
 ```
 
