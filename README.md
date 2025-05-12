@@ -1,6 +1,6 @@
 # sudo rm -rf agentic_security
 
-**🎉 Excited to share that our paper "[sudo rm -rf agentic_security](https://arxiv.org/abs/2503.20279)" has been accepted to ACL 2025 (Industry Track)!**
+### 🎉 Excited to share that our paper "[sudo rm -rf agentic_security](https://arxiv.org/abs/2503.20279)" has been accepted to ACL 2025 (Industry Track)!
 
 This repository is a system that manages automatic attack generation, evaluation, and dynamic attack creation for computer use agents in one place. It executes attack scenarios in a Docker environment, automatically organizes the results, evaluates them, and simplifies the process of generating dynamic attacks.
 
