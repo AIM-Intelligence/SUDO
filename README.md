@@ -164,8 +164,7 @@ If you find this repository helpful in your research or work, please cite the fo
 ```bibtex
 @inproceedings{leeetal2025sudo,
   title      = {sudo rm-rf agentic\_security},
-  author     = {Lee, Sejin$^{\ast}$ and Kim, Jian$^{\ast}$ and Park, Haon$^{\dagger}$
-                and Yousefpour, Ashkan and Yu, Sangyoon and Song, Min},
+  author     = {Lee, Sejin and Kim, Jian and Park, Haon and Yousefpour, Ashkan and Yu, Sangyoon and Song, Min},
   booktitle  = {Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Industry Track)},
   year       = {2025},
   month      = jul,
@@ -173,7 +172,7 @@ If you find this repository helpful in your research or work, please cite the fo
   publisher  = {Association for Computational Linguistics},
   pages      = {to appear},
   url        = {https://arxiv.org/abs/2503.20279},
-  note       = {$\ast$ Equal contribution, co-first authors. $\dagger$ Second author.}
+  note       = {Sejin Lee and Jian Kim contributed equally.}
 }
 ```
 
