@@ -1,6 +1,6 @@
 # sudo rm -rf agentic_security
 
-### 🎉 Excited to share that our paper "[sudo rm -rf agentic_security](https://arxiv.org/abs/2503.20279)" has been accepted to ACL 2025 (Industry Track)!
+### 🎉 Excited to share that our paper "[sudo rm -rf agentic_security](https://aclanthology.org/2025.acl-industry.75/)" has been accepted to ACL 2025 (Industry Track)!
 
 ---
 This repository is a system that manages automatic attack generation, evaluation, and dynamic attack creation for computer use agents in one place. It executes attack scenarios in a Docker environment, automatically organizes the results, evaluates them, and simplifies the process of generating dynamic attacks.
@@ -161,20 +161,27 @@ docker run -v $(pwd)/...:/home/...
 ## Citation
 If you find this repository helpful in your research or work, please cite the following paper:
 ```bibtex
-@inproceedings{leeetal2025sudo,
-  title      = {sudo rm-rf agentic\_security},
-  author     = {Lee, Sejin and Kim, Jian and Park, Haon and Yousefpour, Ashkan and Yu, Sangyoon and Song, Min},
-  booktitle  = {Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Industry Track)},
-  year       = {2025},
-  month      = jul,
-  address    = {Vienna, Austria},
-  publisher  = {Association for Computational Linguistics},
-  pages      = {to appear},
-  url        = {https://arxiv.org/abs/2503.20279},
-  note       = {Sejin Lee and Jian Kim contributed equally.}
+@inproceedings{lee-etal-2025-sudo,
+    title = "sudo rm -rf agentic{\_}security",
+    author = "Lee, Sejin  and
+      Kim, Jian  and
+      Park, Haon  and
+      Yousefpour, Ashkan  and
+      Yu, Sangyoon  and
+      Song, Min",
+    editor = "Rehm, Georg  and
+      Li, Yunyao",
+    booktitle = "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 6: Industry Track)",
+    month = jul,
+    year = "2025",
+    address = "Vienna, Austria",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2025.acl-industry.75/",
+    pages = "1050--1071",
+    ISBN = "979-8-89176-288-6",
+    note       = {Sejin Lee and Jian Kim contributed equally.}
 }
 ```
 
-## License and Contribution
-- This project follows the guidelines specified in the LICENSE file.
+## Contribution
 - Feel free to submit bug reports, feature requests, or pull requests.
